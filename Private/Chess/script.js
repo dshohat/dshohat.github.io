@@ -15,6 +15,9 @@ class ChessGame {
             black: { kingSide: true, queenSide: true }
         };
         
+        // Track en passant target square (null if not available)
+        this.enPassantTarget = null;
+        
         this.createBoard();
         this.updateDisplay();
     }
@@ -337,6 +340,7 @@ class ChessGame {
             
             pieces.forEach(piece => {
                 const button = document.createElement('button');
+                button.className = `${color}-${piece}`;
                 button.style.cssText = `
                     font-size: 60px;
                     width: 90px;
@@ -346,8 +350,10 @@ class ChessGame {
                     border-radius: 10px;
                     cursor: pointer;
                     transition: all 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 `;
-                button.textContent = pieceSymbols[piece];
                 button.onmouseover = () => {
                     button.style.background = '#3498db';
                     button.style.borderColor = '#2980b9';
@@ -437,9 +443,18 @@ class ChessGame {
             if (fromRow === startRow && toRow === fromRow + 2 * direction) return true;
         }
         
-        // Capture diagonally
+        // Capture diagonally (normal capture)
         if (Math.abs(fromCol - toCol) === 1 && toRow === fromRow + direction) {
-            return this.board[toRow][toCol] !== null;
+            if (this.board[toRow][toCol] !== null) {
+                return true;
+            }
+            
+            // Check for en passant capture
+            if (this.enPassantTarget && 
+                this.enPassantTarget.row === toRow && 
+                this.enPassantTarget.col === toCol) {
+                return true;
+            }
         }
         
         return false;
@@ -612,6 +627,22 @@ class ChessGame {
         const isCastling = piece.type === 'king' && Math.abs(toCol - fromCol) === 2;
         let rookMove = null;
         
+        // Check if this is an en passant capture
+        const isEnPassant = piece.type === 'pawn' && 
+                           Math.abs(fromCol - toCol) === 1 && 
+                           !capturedPiece && 
+                           this.enPassantTarget && 
+                           this.enPassantTarget.row === toRow && 
+                           this.enPassantTarget.col === toCol;
+        
+        let enPassantCapturedPiece = null;
+        if (isEnPassant) {
+            // Remove the pawn that was captured en passant
+            const capturedPawnRow = piece.color === 'white' ? toRow + 1 : toRow - 1;
+            enPassantCapturedPiece = this.board[capturedPawnRow][toCol];
+            this.board[capturedPawnRow][toCol] = null;
+        }
+        
         if (isCastling) {
             const isKingSide = toCol > fromCol;
             const rookFromCol = isKingSide ? 7 : 0;
@@ -631,6 +662,9 @@ class ChessGame {
         this.board[toRow][toCol] = piece;
         this.board[fromRow][fromCol] = null;
         
+        // Update en passant target
+        this.updateEnPassantTarget(piece, fromRow, fromCol, toRow, toCol);
+        
         // Update castling rights
         this.updateCastlingRights(piece, fromRow, fromCol, capturedPiece, toRow, toCol);
         
@@ -641,13 +675,13 @@ class ChessGame {
                 // Pawn reached the end - show promotion dialog
                 this.showPromotionDialog(toRow, toCol, piece.color).then(promotedPiece => {
                     this.board[toRow][toCol] = { type: promotedPiece, color: piece.color };
-                    this.completeMove(fromRow, fromCol, toRow, toCol, piece, capturedPiece, promotedPiece, isCastling, rookMove);
+                    this.completeMove(fromRow, fromCol, toRow, toCol, piece, capturedPiece || enPassantCapturedPiece, promotedPiece, isCastling, rookMove, isEnPassant);
                 });
                 return; // Wait for promotion choice
             }
         }
         
-        this.completeMove(fromRow, fromCol, toRow, toCol, piece, capturedPiece, null, isCastling, rookMove);
+        this.completeMove(fromRow, fromCol, toRow, toCol, piece, capturedPiece || enPassantCapturedPiece, null, isCastling, rookMove, isEnPassant);
     }
     
     updateCastlingRights(piece, fromRow, fromCol, capturedPiece, toRow, toCol) {
@@ -683,8 +717,19 @@ class ChessGame {
         }
     }
     
-    completeMove(fromRow, fromCol, toRow, toCol, piece, capturedPiece, promotedTo, isCastling, rookMove) {
-        const moveNotation = this.getMoveNotation(piece, fromRow, fromCol, toRow, toCol, capturedPiece, promotedTo, isCastling);
+    updateEnPassantTarget(piece, fromRow, fromCol, toRow, toCol) {
+        // Reset en passant target
+        this.enPassantTarget = null;
+        
+        // If a pawn moves two squares, set the en passant target
+        if (piece.type === 'pawn' && Math.abs(toRow - fromRow) === 2) {
+            const targetRow = (fromRow + toRow) / 2;
+            this.enPassantTarget = { row: targetRow, col: toCol };
+        }
+    }
+    
+    completeMove(fromRow, fromCol, toRow, toCol, piece, capturedPiece, promotedTo, isCastling, rookMove, isEnPassant = false) {
+        const moveNotation = this.getMoveNotation(piece, fromRow, fromCol, toRow, toCol, capturedPiece, promotedTo, isCastling, isEnPassant);
         
         // Record the move
         const move = {
@@ -696,7 +741,8 @@ class ChessGame {
             player: this.currentPlayer,
             promotedTo: promotedTo,
             isCastling: isCastling,
-            rookMove: rookMove
+            rookMove: rookMove,
+            isEnPassant: isEnPassant
         };
         
         this.moveHistory.push(move);
@@ -713,7 +759,7 @@ class ChessGame {
         this.showCurrentMove(moveNotation);
     }
     
-    getMoveNotation(piece, fromRow, fromCol, toRow, toCol, capturedPiece, promotedTo, isCastling) {
+    getMoveNotation(piece, fromRow, fromCol, toRow, toCol, capturedPiece, promotedTo, isCastling, isEnPassant = false) {
         // Handle castling notation
         if (isCastling) {
             const isKingSide = toCol > fromCol;
@@ -739,7 +785,7 @@ class ChessGame {
         }
         
         // Add capture notation
-        if (capturedPiece) {
+        if (capturedPiece || isEnPassant) {
             if (piece.type === 'pawn') {
                 notation += files[fromCol]; // For pawn captures, show the file
             }
@@ -748,6 +794,11 @@ class ChessGame {
         
         // Add destination square
         notation += toSquare;
+        
+        // Add en passant notation
+        if (isEnPassant) {
+            notation += ' e.p.';
+        }
         
         // Add promotion notation
         if (promotedTo) {
@@ -1246,6 +1297,14 @@ class ChessGame {
         this.board[lastMove.from.row][lastMove.from.col] = lastMove.piece;
         this.board[lastMove.to.row][lastMove.to.col] = lastMove.capturedPiece;
         
+        // Undo en passant capture if applicable
+        if (lastMove.isEnPassant) {
+            // Restore the captured pawn
+            const capturedPawnRow = lastMove.piece.color === 'white' ? lastMove.to.row + 1 : lastMove.to.row - 1;
+            this.board[capturedPawnRow][lastMove.to.col] = lastMove.capturedPiece;
+            this.board[lastMove.to.row][lastMove.to.col] = null; // Clear the destination square
+        }
+        
         // Undo castling rook move if applicable
         if (lastMove.isCastling && lastMove.rookMove) {
             const rookToRow = lastMove.rookMove.to.row;
@@ -1259,6 +1318,9 @@ class ChessGame {
         
         // Switch back to the previous player
         this.currentPlayer = lastMove.player;
+        
+        // Restore en passant target (recalculate based on the previous move)
+        this.restoreEnPassantTarget();
         
         // Restore castling rights (simplified - would need to track history for full accuracy)
         // For now, we'll recalculate based on position
@@ -1327,6 +1389,21 @@ class ChessGame {
         }
     }
     
+    restoreEnPassantTarget() {
+        // Reset en passant target
+        this.enPassantTarget = null;
+        
+        // Check if the last move in history was a two-square pawn move
+        if (this.moveHistory.length > 0) {
+            const lastHistoryMove = this.moveHistory[this.moveHistory.length - 1];
+            if (lastHistoryMove.piece.type === 'pawn' && 
+                Math.abs(lastHistoryMove.to.row - lastHistoryMove.from.row) === 2) {
+                const targetRow = (lastHistoryMove.from.row + lastHistoryMove.to.row) / 2;
+                this.enPassantTarget = { row: targetRow, col: lastHistoryMove.to.col };
+            }
+        }
+    }
+    
     resetGame() {
         this.board = this.initializeBoard();
         this.currentPlayer = 'white';
@@ -1342,6 +1419,9 @@ class ChessGame {
             white: { kingSide: true, queenSide: true },
             black: { kingSide: true, queenSide: true }
         };
+        
+        // Reset en passant target
+        this.enPassantTarget = null;
         
         this.createBoard();
         this.updateDisplay();
