@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drory Shohat - Podcasts</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-brand h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 5rem 2rem 4rem;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Podcasts Section */
+        .podcasts-section {
+            flex: 1;
+            padding: 4rem 0;
+            background: #f8fafc;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #1e293b;
+        }
+
+        .podcasts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .podcast-series {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .podcast-series:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .podcast-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .podcast-icon {
+            font-size: 3.5rem;
+            flex-shrink: 0;
+        }
+
+        .podcast-info {
+            flex: 1;
+        }
+
+        .podcast-series-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .podcast-series-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .episodes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .episode {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.25rem;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .episode:hover {
+            background: #f1f5f9;
+            border-left-color: #764ba2;
+        }
+
+        .episode-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .episode-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .episode-player {
+            width: 100%;
+            margin-top: 0.75rem;
+        }
+
+        audio {
+            width: 100%;
+            height: 40px;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        audio::-webkit-media-controls-panel {
+            background-color: #667eea;
+        }
+
+        .episode-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.75rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .podcast-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .podcast-tag {
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .coming-soon {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .coming-soon-badge {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 1rem;
+            }
+            
+            .nav-brand h1 {
+                font-size: 1.25rem;
+            }
+            
+            .nav-links {
+                font-size: 0.9rem;
+            }
+            
+            .hero {
+                padding: 4rem 1.5rem 3rem;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+                padding: 0 1rem;
+            }
+            
+            .podcasts-section {
+                padding: 3rem 0;
+            }
+
+            .section-title {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .podcasts-grid {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+                gap: 1.5rem;
+            }
+            
+            .podcast-series {
+                padding: 1.5rem;
+            }
+            
+            .podcast-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .podcast-icon {
+                font-size: 3rem;
+            }
+            
+            .podcast-series-title {
+                font-size: 1.35rem;
+            }
+            
+            .episode {
+                padding: 1rem;
+            }
+            
+            .episode-title {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav {
+                padding: 0.75rem;
+            }
+            
+            .hero {
+                padding: 3rem 1rem 2.5rem;
+            }
+            
+            .hero-title {
+                font-size: 1.75rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .podcast-icon {
+                font-size: 2.5rem;
+            }
+            
+            .podcast-series-title {
+                font-size: 1.25rem;
+            }
+            
+            .podcast-series {
+                padding: 1.25rem;
+            }
+            
+            .episode {
+                padding: 0.9rem;
+            }
+            
+            .episode-title {
+                font-size: 0.95rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.35rem;
+            }
+            
+            .episode-number {
+                font-size: 0.8rem;
+                padding: 0.15rem 0.5rem;
+            }
+            
+            .episode-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .podcast-tag {
+                font-size: 0.8rem;
+                padding: 0.2rem 0.6rem;
+            }
+            
+            audio {
+                height: 36px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .nav-brand h1 {
+                font-size: 1.1rem;
+            }
+            
+            .podcast-icon {
+                font-size: 2rem;
+            }
+            
+            .podcast-series-title {
+                font-size: 1.1rem;
+            }
+            
+            audio {
+                height: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <a href="../index.html" style="text-decoration: none; color: inherit;">
+                    <h1>Drory Shohat</h1>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../index.html">← Back to Projects</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">My Podcasts 🎙️</h1>
+                <p class="hero-subtitle">Audio stories, conversations, and insights from my personal collection</p>
+            </div>
+        </section>
+
+        <!-- Podcasts Section -->
+        <section class="podcasts-section">
+            <div class="container">
+                <h2 class="section-title">Podcast Series</h2>
+                <div class="podcasts-grid">
+                    <!-- Shlomo Podcast Series -->
+                    <div class="podcast-series">
+                        <div class="podcast-header">
+                            <span class="podcast-icon">🎧</span>
+                            <div class="podcast-info">
+                                <h3 class="podcast-series-title">Shlomo</h3>
+                                <p class="podcast-series-subtitle">A special podcast series</p>
+                            </div>
+                        </div>
+                        
+                        <div class="episodes-list">
+                            <!-- Episode 1 -->
+                            <div class="episode">
+                                <div class="episode-title">
+                                    <span class="episode-number">Episode 1</span>
+                                    <span>Chapter One</span>
+                                </div>
+                                <div class="episode-player">
+                                    <audio controls preload="metadata">
+                                        <source src="Shlomo/Shlomo 1.mp3" type="audio/mpeg">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                </div>
+                                <div class="episode-meta">
+                                    <span class="meta-item">
+                                        <span>🎵</span>
+                                        <span>Audio</span>
+                                    </span>
+                                    <span class="meta-item">
+                                        <span>📅</span>
+                                        <span>2025</span>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Placeholder for future episodes -->
+                            <div class="episode coming-soon">
+                                <div class="episode-title">
+                                    <span class="episode-number">Episode 2</span>
+                                    <span>Coming Soon</span>
+                                </div>
+                                <span class="coming-soon-badge">More episodes coming soon...</span>
+                            </div>
+                        </div>
+                        
+                        <div class="podcast-tags">
+                            <span class="podcast-tag">Podcast</span>
+                            <span class="podcast-tag">Audio</span>
+                            <span class="podcast-tag">Series</span>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder for future podcast series -->
+                    <div class="podcast-series coming-soon">
+                        <div class="podcast-header">
+                            <span class="podcast-icon">🚀</span>
+                            <div class="podcast-info">
+                                <h3 class="podcast-series-title">More Podcasts Coming</h3>
+                                <p class="podcast-series-subtitle">Stay tuned for more audio content!</p>
+                            </div>
+                        </div>
+                        <span class="coming-soon-badge">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Drory Shohat. All rights reserved. | <a href="https://github.com/dshohat" target="_blank">GitHub</a> | <a href="https://linkedin.com/in/drorys" target="_blank">LinkedIn</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Track audio playback analytics (optional)
+        document.querySelectorAll('audio').forEach(audio => {
+            audio.addEventListener('play', function() {
+                console.log('Playing:', this.src);
+            });
+            
+            audio.addEventListener('ended', function() {
+                console.log('Finished:', this.src);
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
