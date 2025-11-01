@@ -1,0 +1,221 @@
+/* Search Component Styles */
+.search-container {
+    position: relative;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: white;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s ease;
+}
+
+.search-wrapper:focus-within {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-icon {
+    color: #64748b;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    font-family: inherit;
+    padding: 0.5rem;
+    background: transparent;
+}
+
+.search-input::placeholder {
+    color: #94a3b8;
+}
+
+.search-scope-toggle {
+    display: flex;
+    gap: 0.25rem;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 0.25rem;
+    flex-shrink: 0;
+}
+
+.search-scope-btn {
+    padding: 0.4rem 0.75rem;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.search-scope-btn:hover {
+    color: #334155;
+}
+
+.search-scope-btn.active {
+    background: white;
+    color: #2563eb;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.search-results {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 1rem;
+    right: 1rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    max-height: 500px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.search-results.active {
+    display: block;
+}
+
+.search-results-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.search-result-item {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+}
+
+.search-result-item:hover {
+    background: #f8fafc;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-title {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+}
+
+.search-result-description {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
+.search-result-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.search-result-tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background: #e0e7ff;
+    color: #4f46e5;
+    border-radius: 4px;
+}
+
+.search-no-results {
+    padding: 2rem 1.25rem;
+    text-align: center;
+    color: #64748b;
+}
+
+.search-loading {
+    padding: 2rem 1.25rem;
+    text-align: center;
+    color: #64748b;
+}
+
+/* RTL Support */
+[dir="rtl"] .search-wrapper {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .search-input {
+    text-align: right;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .search-container {
+        margin: 1.5rem auto;
+    }
+
+    .search-wrapper {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .search-scope-toggle {
+        display: none;
+    }
+
+    .search-results {
+        max-height: 400px;
+    }
+
+    .search-result-item {
+        padding: 0.875rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-container {
+        margin: 1rem auto;
+        padding: 0 0.5rem;
+    }
+
+    .search-wrapper {
+        padding: 0.5rem;
+    }
+
+    .search-input {
+        font-size: 0.9rem;
+    }
+
+    .search-results {
+        left: 0.5rem;
+        right: 0.5rem;
+        max-height: 350px;
+    }
+
+    .search-result-title {
+        font-size: 0.95rem;
+    }
+
+    .search-result-description {
+        font-size: 0.8rem;
+    }
+}

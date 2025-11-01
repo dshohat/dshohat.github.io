@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drory Shohat - Podcasts</title>
+    <title>פודקאסטים של דרורי שוחט</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/search.css">
     <style>
         /* CSS Reset and Base Styles */
         * {
@@ -19,7 +20,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Heebo', sans-serif;
             line-height: 1.6;
             color: #333;
             background-color: #fff;
@@ -176,13 +177,14 @@
             background: #f8fafc;
             border-radius: 8px;
             padding: 1.25rem;
-            border-left: 4px solid #667eea;
+            border-left: none;
+            border-right: 4px solid #667eea;
             transition: all 0.3s ease;
         }
 
         .episode:hover {
             background: #f1f5f9;
-            border-left-color: #764ba2;
+            border-right-color: #764ba2;
         }
 
         .episode-title {
@@ -193,6 +195,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            direction: rtl;
         }
 
         .episode-number {
@@ -448,14 +451,14 @@
 <body>
     <header class="header">
         <nav class="nav">
+            <ul class="nav-links">
+                <li><a href="../index.html">→ חזרה לפרוייקטים</a></li>
+            </ul>
             <div class="nav-brand">
                 <a href="../index.html" style="text-decoration: none; color: inherit;">
-                    <h1>Drory Shohat</h1>
+                    <h1>דרורי שוחט</h1>
                 </a>
             </div>
-            <ul class="nav-links">
-                <li><a href="../index.html">← Back to Projects</a></li>
-            </ul>
         </nav>
     </header>
 
@@ -463,79 +466,20 @@
         <!-- Hero Section -->
         <section class="hero">
             <div class="hero-content">
-                <h1 class="hero-title">My Podcasts 🎙️</h1>
-                <p class="hero-subtitle">Audio stories, conversations, and insights from my personal collection</p>
+                <h1 class="hero-title">הפודקאסטים שלי 🎙️</h1>
+                <p class="hero-subtitle">סיפורים, שיחות ותובנות מהאוסף האישי שלי</p>
             </div>
         </section>
+
+        <!-- Search Section -->
+        <div class="search-container" id="search-container"></div>
 
         <!-- Podcasts Section -->
         <section class="podcasts-section">
             <div class="container">
-                <h2 class="section-title">Podcast Series</h2>
-                <div class="podcasts-grid">
-                    <!-- Shlomo Podcast Series -->
-                    <div class="podcast-series">
-                        <div class="podcast-header">
-                            <span class="podcast-icon">🎧</span>
-                            <div class="podcast-info">
-                                <h3 class="podcast-series-title">Shlomo</h3>
-                                <p class="podcast-series-subtitle">A special podcast series</p>
-                            </div>
-                        </div>
-                        
-                        <div class="episodes-list">
-                            <!-- Episode 1 -->
-                            <div class="episode">
-                                <div class="episode-title">
-                                    <span class="episode-number">Episode 1</span>
-                                    <span>Chapter One</span>
-                                </div>
-                                <div class="episode-player">
-                                    <audio controls preload="metadata">
-                                        <source src="Shlomo/Shlomo 1.mp3" type="audio/mpeg">
-                                        Your browser does not support the audio element.
-                                    </audio>
-                                </div>
-                                <div class="episode-meta">
-                                    <span class="meta-item">
-                                        <span>🎵</span>
-                                        <span>Audio</span>
-                                    </span>
-                                    <span class="meta-item">
-                                        <span>📅</span>
-                                        <span>2025</span>
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <!-- Placeholder for future episodes -->
-                            <div class="episode coming-soon">
-                                <div class="episode-title">
-                                    <span class="episode-number">Episode 2</span>
-                                    <span>Coming Soon</span>
-                                </div>
-                                <span class="coming-soon-badge">More episodes coming soon...</span>
-                            </div>
-                        </div>
-                        
-                        <div class="podcast-tags">
-                            <span class="podcast-tag">Podcast</span>
-                            <span class="podcast-tag">Audio</span>
-                            <span class="podcast-tag">Series</span>
-                        </div>
-                    </div>
-
-                    <!-- Placeholder for future podcast series -->
-                    <div class="podcast-series coming-soon">
-                        <div class="podcast-header">
-                            <span class="podcast-icon">🚀</span>
-                            <div class="podcast-info">
-                                <h3 class="podcast-series-title">More Podcasts Coming</h3>
-                                <p class="podcast-series-subtitle">Stay tuned for more audio content!</p>
-                            </div>
-                        </div>
-                        <span class="coming-soon-badge">Coming Soon</span>
-                    </div>
+                <h2 class="section-title">סדרות פודקאסטים</h2>
+                <div class="podcasts-grid" id="podcasts-grid">
+                    <!-- Podcasts will be loaded dynamically -->
                 </div>
             </div>
         </section>
@@ -543,21 +487,135 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Drory Shohat. All rights reserved. | <a href="https://github.com/dshohat" target="_blank">GitHub</a> | <a href="https://linkedin.com/in/drorys" target="_blank">LinkedIn</a></p>
+            <p>&copy; 2025 דרורי שוחט. כל הזכויות שמורות. | <a href="https://github.com/dshohat" target="_blank">GitHub</a> | <a href="https://linkedin.com/in/drorys" target="_blank">LinkedIn</a></p>
         </div>
     </footer>
 
+    <!-- Search Component -->
+    <script src="../../js/search.js"></script>
     <script>
-        // Track audio playback analytics (optional)
-        document.querySelectorAll('audio').forEach(audio => {
-            audio.addEventListener('play', function() {
-                console.log('Playing:', this.src);
+        let podcastsData = [];
+
+        // Load podcasts from JSON
+        async function loadPodcasts() {
+            try {
+                const response = await fetch('podcasts-data.json');
+                const data = await response.json();
+                podcastsData = data.series;
+                renderPodcasts(podcastsData);
+                
+                // Initialize search component AFTER podcasts are loaded
+                SearchComponent.initialize({
+                    containerId: 'search-container',
+                    searchIndexUrl: '../../search-index.json',
+                    section: 'podcasts',
+                    placeholder: 'חפש פודקאסטים...',
+                    rtl: true
+                });
+            } catch (error) {
+                console.error('Error loading podcasts:', error);
+                document.getElementById('podcasts-grid').innerHTML = '<p style="text-align: center; color: #64748b;">שגיאה בטעינת הפודקאסטים</p>';
+            }
+        }
+
+        // Render podcasts to the page
+        function renderPodcasts(series) {
+            const grid = document.getElementById('podcasts-grid');
+            grid.innerHTML = '';
+
+            series.forEach(podcast => {
+                const podcastCard = document.createElement('div');
+                podcastCard.className = 'podcast-series';
+                podcastCard.id = podcast.id;
+
+                // Build episodes HTML
+                let episodesHtml = '';
+                podcast.episodes.forEach(episode => {
+                    episodesHtml += `
+                        <div class="episode" id="${episode.id}">
+                            <div class="episode-title">
+                                <span class="episode-number">פרק ${episode.episodeNumber}</span>
+                                <span>${episode.title}</span>
+                            </div>
+                            <div class="episode-player">
+                                <audio controls preload="metadata">
+                                    <source src="${episode.audioFile}" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </div>
+                            <div class="episode-meta">
+                                <span class="meta-item">
+                                    <span>🎵</span>
+                                    <span>אודיו</span>
+                                </span>
+                                <span class="meta-item">
+                                    <span>📅</span>
+                                    <span>${episode.date}</span>
+                                </span>
+                            </div>
+                            ${episode.description ? `<p style="margin-top: 0.75rem; font-size: 0.9rem; color: #64748b; line-height: 1.6;">${episode.description}</p>` : ''}
+                        </div>
+                    `;
+                });
+
+                // Add coming soon episode placeholder
+                episodesHtml += `
+                    <div class="episode coming-soon">
+                        <div class="episode-title">
+                            <span class="episode-number">פרק ${podcast.episodes.length + 1}</span>
+                            <span>בקרוב</span>
+                        </div>
+                        <span class="coming-soon-badge">עוד פרקים בקרוב...</span>
+                    </div>
+                `;
+
+                podcastCard.innerHTML = `
+                    <div class="podcast-header">
+                        <span class="podcast-icon">${podcast.icon}</span>
+                        <div class="podcast-info">
+                            <h3 class="podcast-series-title">${podcast.title}</h3>
+                            <p class="podcast-series-subtitle">${podcast.description}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="episodes-list">
+                        ${episodesHtml}
+                    </div>
+                    
+                    <div class="podcast-tags">
+                        ${podcast.tags.map(tag => `<span class="podcast-tag">${tag}</span>`).join('')}
+                    </div>
+                `;
+
+                grid.appendChild(podcastCard);
             });
-            
-            audio.addEventListener('ended', function() {
-                console.log('Finished:', this.src);
+
+            // Add coming soon placeholder
+            const comingSoon = document.createElement('div');
+            comingSoon.className = 'podcast-series coming-soon';
+            comingSoon.innerHTML = `
+                <div class="podcast-header">
+                    <span class="podcast-icon">🚀</span>
+                    <div class="podcast-info">
+                        <h3 class="podcast-series-title">עוד פודקאסטים בקרוב</h3>
+                        <p class="podcast-series-subtitle">הישארו מעודכנים לתוכן חדש!</p>
+                    </div>
+                </div>
+                <span class="coming-soon-badge">בקרוב</span>
+            `;
+            grid.appendChild(comingSoon);
+
+            // Track audio playback
+            document.querySelectorAll('audio').forEach(audio => {
+                audio.addEventListener('play', function() {
+                    console.log('Playing:', this.src);
+                });
+                
+                audio.addEventListener('ended', function() {
+                    console.log('Finished:', this.src);
+                });
             });
-        });
+        }
 
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -571,6 +629,9 @@
                 }
             });
         });
+
+        // Load podcasts on page load
+        loadPodcasts();
     </script>
 </body>
 </html>

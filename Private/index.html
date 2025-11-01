@@ -6,6 +6,7 @@
     <title>Drory Shohat - Private Projects</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/search.css">
     <style>
         /* CSS Reset and Base Styles */
         * {
@@ -362,6 +363,9 @@
             </div>
         </section>
 
+        <!-- Search Section -->
+        <div class="search-container" id="search-container"></div>
+
         <!-- Projects Section -->
         <section class="projects-section">
             <div class="container">
@@ -446,6 +450,19 @@
                     this.style.cursor = 'pointer';
                 });
             }
+        });
+    </script>
+
+    <!-- Search Component -->
+    <script src="../js/search.js"></script>
+    <script>
+        // Initialize search component
+        SearchComponent.initialize({
+            containerId: 'search-container',
+            searchIndexUrl: '../search-index.json',
+            section: 'home',
+            placeholder: 'Search projects...',
+            rtl: false
         });
     </script>
 </body>
