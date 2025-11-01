@@ -6,6 +6,7 @@
     <title>Drory Shohat - Private Projects</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/search.css">
     <style>
         /* CSS Reset and Base Styles */
         * {
@@ -362,13 +363,16 @@
             </div>
         </section>
 
+        <!-- Search Section -->
+        <div class="search-container" id="search-container"></div>
+
         <!-- Projects Section -->
         <section class="projects-section">
             <div class="container">
                 <h2 class="section-title">My Projects</h2>
                 <div class="projects-grid">
                     <!-- Chess Game Project -->
-                    <a href="Chess/index.html" class="project-card">
+                    <a href="Chess/chess.html" class="project-card">
                         <span class="project-icon">♟️</span>
                         <h3 class="project-title">Chess with a Friend</h3>
                         <p class="project-description">
@@ -384,7 +388,7 @@
                     </a>
 
                     <!-- Recipes Project -->
-                    <a href="Recepies/index.html" class="project-card">
+                    <a href="Recepies/recipes.html" class="project-card">
                         <span class="project-icon">🍳</span>
                         <h3 class="project-title">My Recipes</h3>
                         <p class="project-description">
@@ -400,7 +404,7 @@
                     </a>
 
                     <!-- Podcasts Project -->
-                    <a href="Podcasts/index.html" class="project-card">
+                    <a href="Podcasts/podcasts.html" class="project-card">
                         <span class="project-icon">🎙️</span>
                         <h3 class="project-title">My Podcasts</h3>
                         <p class="project-description">
@@ -446,6 +450,19 @@
                     this.style.cursor = 'pointer';
                 });
             }
+        });
+    </script>
+
+    <!-- Search Component -->
+    <script src="../js/search.js"></script>
+    <script>
+        // Initialize search component
+        SearchComponent.initialize({
+            containerId: 'search-container',
+            searchIndexUrl: '../search-index.json',
+            section: 'home',
+            placeholder: 'Search projects...',
+            rtl: false
         });
     </script>
 </body>

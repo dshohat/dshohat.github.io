@@ -6,6 +6,7 @@
     <title>מתכונים של דרורי שוחט</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/search.css">
     <style>
         /* CSS Reset and Base Styles */
         * {
@@ -421,122 +422,15 @@
             </div>
         </section>
 
+        <!-- Search Section -->
+        <div class="search-container" id="search-container"></div>
+
         <!-- Recipes Section -->
         <section class="recipes-section">
             <div class="container">
                 <h2 class="section-title">מתכונים</h2>
-                <div class="recipes-grid">
-                    <!-- Recipe 1: Perfect Rice -->
-                    <div class="recipe-card" onclick="toggleRecipe('recipe1')">
-                        <span class="recipe-icon">🍚</span>
-                        <h3 class="recipe-title">אורז מושלם</h3>
-                        <p class="recipe-description">
-                            אורז לבן בשיטת היחס 1:1 - פשוט, מהיר ותמיד מוצלח
-                        </p>
-                        <div class="recipe-tags">
-                            <span class="recipe-tag">תוספת</span>
-                            <span class="recipe-tag">קל להכנה</span>
-                            <span class="recipe-tag">20 דקות</span>
-                        </div>
-                        <div class="recipe-details" id="recipe1">
-                            <div class="recipe-content">אורז מושלם – בשיטת היחס 1:1
-
-מצרכים (ל-4 מנות)
-• 2 כוסות אורז לבן (שטוף ומושרה)
-• 2 כוסות מים
-• 1 כפית מלח
-• 2 כפות שמן (קנולה או זית)
-
-אופן ההכנה
-
-שלב 1 – הכנת האורז
-1. שוטפים היטב את האורז עד שהמים צלולים
-2. משרים את האורז במים למשך 15–20 דקות, ואז מסננים
-
-שלב 2 – הרתחת המים
-1. בסיר בינוני, שמים את המים, המלח והשמן
-2. מביאים לרתיחה מלאה
-
-שלב 3 – בישול האורז
-1. כשהמים רותחים, מוסיפים את האורז המסונן
-2. מבשלים על אש נמוכה עם מכסה סגור למשך 20 דקות
-3. באמצע הבישול (אחרי כ-10 דקות) אפשר לפתוח ולערבב בעדינות כדי למנוע הידבקות
-4. אם צריך אפשר לפתוח שוב ולהפוך
-
-שלב 4 – סיום
-• מכבים את האש ומשאירים את הסיר מכוסה
-• מפרידים את הגרגרים ומגישים</div>
-                            <button class="close-btn" onclick="event.stopPropagation(); toggleRecipe('recipe1')">סגור</button>
-                        </div>
-                    </div>
-
-                    <!-- Recipe 2: Yom Kippur Chicken -->
-                    <div class="recipe-card" onclick="toggleRecipe('recipe2')">
-                        <span class="recipe-icon">🍗</span>
-                        <h3 class="recipe-title">עוף של יום כיפור</h3>
-                        <p class="recipe-description">
-                            מתכון מסורתי בסגנון סבא שלמה - עוף עסיסי ברוטב קוקוס ואננס
-                        </p>
-                        <div class="recipe-tags">
-                            <span class="recipe-tag">מנה עיקרית</span>
-                            <span class="recipe-tag">מיוחד</span>
-                            <span class="recipe-tag">חג</span>
-                        </div>
-                        <div class="recipe-details" id="recipe2">
-                            <div class="recipe-content">עוף של יום כיפור בסגנון סבא שלמה
-
-מצרכים למנה (6–8 כרעיים, כ-3–4 ק"ג)
-• 6–8 כרעיים עוף (ללא עור ושומן)
-• קופסת שימורי אננס גדולה (נטו 825 גרם, משקל פרי כ-490 גרם)
-• מלח – לפי הטעם
-• פלפל שחור – לפי הטעם
-• תבלין שווארמה – כ-2 כפות
-
-מצרכים לרוטב
-• 4–6 בצלים גדולים
-• קופסת קרם קוקוס (400 מ"ל)
-• 1–2 כפיות רסק עגבניות
-• פפריקה חריפה – לפי הטעם
-• כורכום – ½ כפית
-• מלח ופלפל – לפי הטעם
-
-מצרכים לתפוחי אדמה
-• 8–10 תפוחי אדמה בינוניים
-• שמן זית – 3–4 כפות
-• תבלין תפוחי אדמה (מוכן מהשוק)
-
-אופן ההכנה
-
-שלב 1 – השריית העוף
-1. טוחנים את כל קופסת האננס (כולל הנוזלים)
-2. סוחטים מעט את הפרי, שומרים את המיץ
-3. מניחים את הכרעיים בגיגית עם מיץ האננס למשך הלילה במקרר
-
-שלב 2 – תיבול
-1. בבוקר מוסיפים לעוף: מלח, פלפל שחור ותבלין שווארמה
-2. מערבבים היטב ומחזירים למקרר עד השימוש
-
-שלב 3 – תפוחי אדמה
-1. מקלפים את תפוחי האדמה
-2. מצפים בשמן זית ובתבלין תפוחי אדמה
-3. משאירים לנוח
-
-שלב 4 – הכנת הרוטב
-1. קוצצים את הבצלים ומטגנים עד השחמה
-2. מוסיפים קרם קוקוס, רסק עגבניות, פפריקה חריפה, כורכום, מלח ופלפל
-3. מבשלים כמה דקות, ואז טוחנים את הרוטב עד מרקם חלק
-
-שלב 5 – בישול
-1. צורבים את הכרעיים במחבת כדי שלא ידבקו
-2. מבשלים חצי שעה עם הנוזלים של העוף
-3. מוסיפים את הרוטב
-4. תפוחי אדמה מעל
-5. מכסים ומכניסים לתנור:
-   • 15 דקות בחום מקסימלי (כ-300°C)
-   • שעה נוספת ב-200°C</div>
-                            <button class="close-btn" onclick="event.stopPropagation(); toggleRecipe('recipe2')">סגור</button>
-                        </div>
-                    </div>
+                <div class="recipes-grid" id="recipes-grid">
+                    <!-- Recipes will be loaded dynamically -->
                 </div>
             </div>
         </section>
@@ -548,20 +442,86 @@
         </div>
     </footer>
 
+    <!-- Search Component -->
+    <script src="../../js/search.js"></script>
+
     <script>
+        let recipesData = [];
+
+        // Load recipes from JSON
+        async function loadRecipes() {
+            try {
+                const response = await fetch('recipes-data.json');
+                const data = await response.json();
+                recipesData = data.recipes;
+                renderRecipes(recipesData);
+                
+                // Initialize search component AFTER recipes are loaded
+                SearchComponent.initialize({
+                    containerId: 'search-container',
+                    searchIndexUrl: '../../search-index.json',
+                    localData: recipesData,
+                    section: 'recipes',
+                    placeholder: 'חפש מתכונים...',
+                    rtl: true
+                });
+            } catch (error) {
+                console.error('Error loading recipes:', error);
+                document.getElementById('recipes-grid').innerHTML = '<p style="text-align: center; color: #64748b;">שגיאה בטעינת המתכונים</p>';
+            }
+        }
+
+        // Render recipes to the page
+        function renderRecipes(recipes) {
+            const grid = document.getElementById('recipes-grid');
+            grid.innerHTML = '';
+
+            recipes.forEach((recipe, index) => {
+                const recipeCard = document.createElement('div');
+                recipeCard.className = 'recipe-card';
+                recipeCard.onclick = () => toggleRecipe(recipe.id);
+                recipeCard.id = recipe.id;
+
+                recipeCard.innerHTML = `
+                    <span class="recipe-icon">${recipe.icon}</span>
+                    <h3 class="recipe-title">${recipe.title}</h3>
+                    <p class="recipe-description">${recipe.description}</p>
+                    <div class="recipe-tags">
+                        ${recipe.tags.map(tag => `<span class="recipe-tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="recipe-details" id="${recipe.id}-details">
+                        <div class="recipe-content">${recipe.content}</div>
+                        <button class="close-btn" onclick="event.stopPropagation(); toggleRecipe('${recipe.id}')">סגור</button>
+                    </div>
+                `;
+
+                grid.appendChild(recipeCard);
+            });
+        }
+
         function toggleRecipe(recipeId) {
-            const recipeDetails = document.getElementById(recipeId);
+            const recipeDetails = document.getElementById(recipeId + '-details');
             const allRecipes = document.querySelectorAll('.recipe-details');
             
             // Close all other recipes
             allRecipes.forEach(recipe => {
-                if (recipe.id !== recipeId) {
+                if (recipe.id !== recipeId + '-details') {
                     recipe.classList.remove('active');
                 }
             });
             
             // Toggle the clicked recipe
             recipeDetails.classList.toggle('active');
+            
+            // Scroll to recipe if opening
+            if (recipeDetails.classList.contains('active')) {
+                setTimeout(() => {
+                    document.getElementById(recipeId).scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'nearest' 
+                    });
+                }, 100);
+            }
         }
 
         // Smooth scrolling for anchor links
@@ -576,6 +536,9 @@
                 }
             });
         });
+
+        // Load recipes on page load
+        loadRecipes();
     </script>
 </body>
 </html>
