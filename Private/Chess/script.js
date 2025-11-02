@@ -8,6 +8,7 @@ class ChessGame {
         this.gameOver = false;
         this.inCheck = false;
         this.checkmate = false;
+        this.stalemate = false;
         
         // Track castling rights
         this.castlingRights = {
@@ -229,10 +230,12 @@ class ChessGame {
             moveNumber++;
         }
         
-        // Add game result if checkmate
+        // Add game result if checkmate or stalemate
         if (this.checkmate) {
             const winner = this.currentPlayer === 'white' ? '0-1' : '1-0';
             moveText += `\nResult: ${winner}`;
+        } else if (this.stalemate) {
+            moveText += `\nResult: 1/2-1/2 (Stalemate)`;
         }
         
         return moveText;
@@ -247,6 +250,9 @@ class ChessGame {
             this.moveHistory = [];
             this.lastMove = null;
             this.gameOver = false;
+            this.inCheck = false;
+            this.checkmate = false;
+            this.stalemate = false;
             this.inCheck = false;
             this.checkmate = false;
             this.castlingRights = {
@@ -265,8 +271,11 @@ class ChessGame {
                     continue;
                 }
                 
-                // Extract moves from lines like "1. e4 e5"
-                const moveMatches = line.match(/\d+\.\s*([^\s]+)(?:\s+([^\s]+))?/);
+                // Extract moves from lines like "1. e4 e5" or "5. dxc6 e.p. Qxc6"
+                // First, clean up en passant notation (e.p. should be part of the move, not separate)
+                const cleanedLine = line.replace(/\s+e\.p\./g, '');
+                
+                const moveMatches = cleanedLine.match(/\d+\.\s*([^\s]+)(?:\s+([^\s]+))?/);
                 if (moveMatches) {
                     if (moveMatches[1]) moves.push(moveMatches[1]);
                     if (moveMatches[2]) moves.push(moveMatches[2]);
@@ -274,9 +283,12 @@ class ChessGame {
             }
             
             // Apply each move
-            for (const moveNotation of moves) {
+            for (let i = 0; i < moves.length; i++) {
+                const moveNotation = moves[i];
                 if (!this.processOpponentMove(moveNotation)) {
-                    throw new Error(`Failed to apply move: ${moveNotation}`);
+                    const moveNumber = Math.floor(i / 2) + 1;
+                    const color = i % 2 === 0 ? 'White' : 'Black';
+                    throw new Error(`Failed to apply move ${moveNumber}. ${moveNotation} (${color})`);
                 }
             }
             
@@ -286,7 +298,7 @@ class ChessGame {
             return true;
         } catch (error) {
             console.error('Import error:', error);
-            this.showNotification('Failed to import moves! Please check the file format.', 'error');
+            this.showNotification(`Failed to import moves! ${error.message}`, 'error');
             return false;
         }
     }
@@ -729,9 +741,9 @@ class ChessGame {
     }
     
     completeMove(fromRow, fromCol, toRow, toCol, piece, capturedPiece, promotedTo, isCastling, rookMove, isEnPassant = false) {
-        const moveNotation = this.getMoveNotation(piece, fromRow, fromCol, toRow, toCol, capturedPiece, promotedTo, isCastling, isEnPassant);
+        let moveNotation = this.getMoveNotation(piece, fromRow, fromCol, toRow, toCol, capturedPiece, promotedTo, isCastling, isEnPassant);
         
-        // Record the move
+        // Record the move (notation will be updated after checking game state)
         const move = {
             from: { row: fromRow, col: fromCol },
             to: { row: toRow, col: toCol },
@@ -753,6 +765,16 @@ class ChessGame {
         
         // Check for check and checkmate
         this.checkGameState();
+        
+        // Update notation with check/checkmate symbols
+        if (this.checkmate) {
+            moveNotation += '#';
+        } else if (this.inCheck) {
+            moveNotation += '+';
+        }
+        
+        // Update the move record with the final notation
+        move.notation = moveNotation;
         
         this.updateDisplay();
         this.updateMoveHistory();
@@ -810,6 +832,9 @@ class ChessGame {
                 case 'knight': notation += 'N'; break;
             }
         }
+        
+        // Note: Check/checkmate symbols will be added later in completeMove/makeOpponentMove
+        // after the game state is updated
         
         return notation;
     }
@@ -947,6 +972,16 @@ class ChessGame {
         const piece = this.board[move.from.row][move.from.col];
         const capturedPiece = this.board[move.to.row][move.to.col];
         
+        // Check if this is an en passant capture
+        let isEnPassant = false;
+        if (piece.type === 'pawn' && 
+            this.enPassantTarget && 
+            move.to.row === this.enPassantTarget.row && 
+            move.to.col === this.enPassantTarget.col &&
+            capturedPiece === null) {
+            isEnPassant = true;
+        }
+        
         // Handle castling
         let isCastling = false;
         let rookMove = null;
@@ -966,6 +1001,15 @@ class ChessGame {
         this.board[move.to.row][move.to.col] = piece;
         this.board[move.from.row][move.from.col] = null;
         
+        // Handle en passant capture (remove the captured pawn)
+        if (isEnPassant) {
+            const capturedPawnRow = piece.color === 'white' ? move.to.row + 1 : move.to.row - 1;
+            this.board[capturedPawnRow][move.to.col] = null;
+        }
+        
+        // Update en passant target
+        this.updateEnPassantTarget(piece, move.from.row, move.from.col, move.to.row, move.to.col);
+        
         // Update castling rights
         this.updateCastlingRights(piece, move.from.row, move.from.col, capturedPiece, move.to.row, move.to.col);
         
@@ -974,7 +1018,7 @@ class ChessGame {
             this.board[move.to.row][move.to.col] = { type: move.promotedTo, color: piece.color };
         }
         
-        const moveNotation = this.getMoveNotation(piece, move.from.row, move.from.col, move.to.row, move.to.col, capturedPiece, move.promotedTo, isCastling);
+        let moveNotation = this.getMoveNotation(piece, move.from.row, move.from.col, move.to.row, move.to.col, capturedPiece, move.promotedTo, isCastling, isEnPassant);
         
         // Record the move
         const moveRecord = {
@@ -997,6 +1041,16 @@ class ChessGame {
         
         // Check for check and checkmate
         this.checkGameState();
+        
+        // Update notation with check/checkmate symbols
+        if (this.checkmate) {
+            moveNotation += '#';
+        } else if (this.inCheck) {
+            moveNotation += '+';
+        }
+        
+        // Update the move record with the final notation
+        moveRecord.notation = moveNotation;
         
         this.updateDisplay();
         this.updateMoveHistory();
@@ -1056,6 +1110,13 @@ class ChessGame {
             return Math.abs(fromCol - toCol) === 1 && toRow === fromRow + direction;
         }
         
+        // For kings, only check normal moves (one square), not castling
+        if (piece.type === 'king') {
+            const rowDiff = Math.abs(fromRow - toRow);
+            const colDiff = Math.abs(fromCol - toCol);
+            return rowDiff <= 1 && colDiff <= 1;
+        }
+        
         // For other pieces, check if the move is valid (ignoring check rules)
         switch (piece.type) {
             case 'rook':
@@ -1066,8 +1127,6 @@ class ChessGame {
                 return this.isValidBishopMove(fromRow, fromCol, toRow, toCol);
             case 'queen':
                 return this.isValidQueenMove(fromRow, fromCol, toRow, toCol);
-            case 'king':
-                return this.isValidKingMove(fromRow, fromCol, toRow, toCol);
             default:
                 return false;
         }
@@ -1086,6 +1145,24 @@ class ChessGame {
         const piece = this.board[fromRow][fromCol];
         const capturedPiece = this.board[toRow][toCol];
         
+        // Check if this is an en passant capture
+        const isEnPassant = piece && piece.type === 'pawn' && 
+                           Math.abs(fromCol - toCol) === 1 && 
+                           !capturedPiece && 
+                           this.enPassantTarget && 
+                           this.enPassantTarget.row === toRow && 
+                           this.enPassantTarget.col === toCol;
+        
+        let enPassantCapturedPiece = null;
+        let enPassantCapturedRow = null;
+        
+        if (isEnPassant) {
+            // Temporarily remove the pawn that was captured en passant
+            enPassantCapturedRow = piece.color === 'white' ? toRow + 1 : toRow - 1;
+            enPassantCapturedPiece = this.board[enPassantCapturedRow][toCol];
+            this.board[enPassantCapturedRow][toCol] = null;
+        }
+        
         this.board[toRow][toCol] = piece;
         this.board[fromRow][fromCol] = null;
         
@@ -1095,6 +1172,11 @@ class ChessGame {
         // Undo the move
         this.board[fromRow][fromCol] = piece;
         this.board[toRow][toCol] = capturedPiece;
+        
+        // Restore en passant captured pawn
+        if (isEnPassant && enPassantCapturedPiece) {
+            this.board[enPassantCapturedRow][toCol] = enPassantCapturedPiece;
+        }
         
         return inCheck;
     }
@@ -1146,17 +1228,95 @@ class ChessGame {
         }
         return false; // No legal moves found
     }
+
     
     checkGameState() {
         this.inCheck = this.isKingInCheck(this.currentPlayer);
+        
+        // Check for insufficient material (draw) - but don't end the game
+        if (this.isInsufficientMaterial()) {
+            this.showNotification('Draw by insufficient material! (You can continue playing if you wish)', 'warning');
+        }
         
         if (this.inCheck) {
             // Check if it's checkmate
             if (!this.hasLegalMoves(this.currentPlayer)) {
                 this.checkmate = true;
                 this.gameOver = true;
+                const winner = this.currentPlayer === 'white' ? 'Black' : 'White';
+                this.showNotification(`Checkmate! ${winner} wins!`, 'error');
+            }
+        } else {
+            // Check if it's stalemate (not in check but no legal moves)
+            if (!this.hasLegalMoves(this.currentPlayer)) {
+                this.stalemate = true;
+                this.gameOver = true;
+                this.showNotification('Stalemate! It\'s a draw!', 'warning');
             }
         }
+    }
+    
+    isInsufficientMaterial() {
+        const pieces = [];
+        
+        // Collect all pieces on the board
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece = this.board[row][col];
+                if (piece) {
+                    pieces.push(piece);
+                }
+            }
+        }
+        
+        // King vs King
+        if (pieces.length === 2) {
+            return true;
+        }
+        
+        // King + minor piece vs King
+        if (pieces.length === 3) {
+            const nonKings = pieces.filter(p => p.type !== 'king');
+            if (nonKings.length === 1) {
+                const piece = nonKings[0];
+                // Only bishop or knight (not queen, rook, or pawn)
+                if (piece.type === 'bishop' || piece.type === 'knight') {
+                    return true;
+                }
+            }
+        }
+        
+        // King + bishop vs King + bishop (same color squares)
+        if (pieces.length === 4) {
+            const bishops = pieces.filter(p => p.type === 'bishop');
+            const kings = pieces.filter(p => p.type === 'king');
+            
+            if (bishops.length === 2 && kings.length === 2) {
+                // Find bishop positions
+                let bishop1Pos = null, bishop2Pos = null;
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const piece = this.board[row][col];
+                        if (piece && piece.type === 'bishop') {
+                            if (!bishop1Pos) {
+                                bishop1Pos = { row, col };
+                            } else {
+                                bishop2Pos = { row, col };
+                            }
+                        }
+                    }
+                }
+                
+                // Check if both bishops are on same color squares
+                const bishop1Color = (bishop1Pos.row + bishop1Pos.col) % 2;
+                const bishop2Color = (bishop2Pos.row + bishop2Pos.col) % 2;
+                if (bishop1Color === bishop2Color) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
     
     updateDisplay() {
@@ -1211,7 +1371,11 @@ class ChessGame {
             const winner = this.currentPlayer === 'white' ? 'Black' : 'White';
             gameStatusElement.textContent = `CHECKMATE! ${winner} wins!`;
             gameStatusElement.className = 'error';
-            currentPlayerElement.textContent = 'Game Over';
+            currentPlayerElement.textContent = `Checkmate - ${winner} wins`;
+        } else if (this.stalemate) {
+            gameStatusElement.textContent = `STALEMATE! It's a draw!`;
+            gameStatusElement.className = 'warning';
+            currentPlayerElement.textContent = 'Stalemate - Draw';
         } else if (this.inCheck) {
             gameStatusElement.textContent = `CHECK! ${this.currentPlayer.charAt(0).toUpperCase() + this.currentPlayer.slice(1)} king is in check!`;
             gameStatusElement.className = 'error';
@@ -1332,6 +1496,7 @@ class ChessGame {
         // Reset game over states
         this.gameOver = false;
         this.checkmate = false;
+        this.stalemate = false;
         
         // Recheck game state
         this.checkGameState();
@@ -1413,6 +1578,7 @@ class ChessGame {
         this.gameOver = false;
         this.inCheck = false;
         this.checkmate = false;
+        this.stalemate = false;
         
         // Reset castling rights
         this.castlingRights = {

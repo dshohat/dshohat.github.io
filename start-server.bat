@@ -19,7 +19,7 @@ REM Wait a moment for the message to be readable
 timeout /t 2 /nobreak >nul
 
 REM Open the main page in default browser
-start http://localhost:8000/index.html
+REM start http://localhost:8000/index.html
 
 REM Start the Python HTTP server
 python -m http.server 8000
