@@ -195,6 +195,13 @@ h1 {
     filter: brightness(1.1);
 }
 
+/* Improve touch targets for mobile */
+.square {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    cursor: pointer;
+}
+
 .piece {
     user-select: none;
     pointer-events: none;
@@ -228,6 +235,8 @@ h1 {
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .input-section button:hover, .controls button:hover {

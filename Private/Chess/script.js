@@ -1,5 +1,8 @@
 class ChessGame {
     constructor() {
+        // Initialize storage availability flag
+        this.storageAvailable = this.checkStorageAvailable();
+        
         // Try to load saved game first
         if (this.loadGameState()) {
             // Game loaded from localStorage
@@ -32,6 +35,24 @@ class ChessGame {
             
             this.createBoard();
             this.updateDisplay();
+        }
+        
+        // Show warning if storage is not available
+        if (!this.storageAvailable) {
+            setTimeout(() => {
+                this.showNotification('Note: Game progress will not be saved (Private browsing or storage disabled)', 'warning');
+            }, 1000);
+        }
+    }
+    
+    checkStorageAvailable() {
+        try {
+            const test = '__storage_test__';
+            localStorage.setItem(test, test);
+            localStorage.removeItem(test);
+            return true;
+        } catch(e) {
+            return false;
         }
     }
     
@@ -79,7 +100,13 @@ class ChessGame {
                 square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
                 square.dataset.row = row;
                 square.dataset.col = col;
+                
+                // Add both click and touch support for better mobile compatibility
                 square.addEventListener('click', () => this.handleSquareClick(row, col));
+                square.addEventListener('touchend', (e) => {
+                    e.preventDefault(); // Prevent ghost click
+                    this.handleSquareClick(row, col);
+                });
                 
                 const piece = this.board[row][col];
                 if (piece) {
@@ -1592,6 +1619,11 @@ class ChessGame {
     
     
     saveGameState() {
+        // Skip if storage is not available
+        if (!this.storageAvailable) {
+            return;
+        }
+        
         const gameState = {
             board: this.board,
             currentPlayer: this.currentPlayer,
@@ -1606,19 +1638,34 @@ class ChessGame {
         };
         
         try {
-            localStorage.setItem('chessGameState', JSON.stringify(gameState));
+            const stateString = JSON.stringify(gameState);
+            localStorage.setItem('chessGameState', stateString);
+            console.log(`Game saved: ${this.moveHistory.length} moves`);
         } catch (e) {
             console.error('Failed to save game state:', e);
+            // Check if it's a quota exceeded error
+            if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                console.error('localStorage quota exceeded');
+                this.storageAvailable = false;
+            }
         }
     }
     
     loadGameState() {
         try {
-            const savedState = localStorage.getItem('chessGameState');
-            if (!savedState) {
+            // Check if localStorage is available
+            if (typeof(Storage) === "undefined") {
+                console.warn('localStorage not supported in this browser');
                 return false;
             }
             
+            const savedState = localStorage.getItem('chessGameState');
+            if (!savedState) {
+                console.log('No saved game state found');
+                return false;
+            }
+            
+            console.log('Loading saved game state...');
             const gameState = JSON.parse(savedState);
             
             // Restore all game state
@@ -1637,6 +1684,7 @@ class ChessGame {
             this.enPassantTarget = gameState.enPassantTarget || null;
             this.selectedSquare = null;
             
+            console.log(`Game loaded: ${this.moveHistory.length} moves, ${this.currentPlayer} to move`);
             return true;
         } catch (e) {
             console.error('Failed to load game state:', e);
