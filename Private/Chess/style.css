@@ -10,31 +10,47 @@ body {
     color: #333;
 }
 
-.page-header {
+/* Header Styles */
+.header {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 1rem 2rem;
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
-.brand-link {
-    text-decoration: none;
-    color: inherit;
-    display: inline-block;
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.brand-link h2 {
-    color: #2563eb;
+.nav-brand h1 {
     font-size: 1.5rem;
     font-weight: 600;
+    color: #2563eb;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
     transition: color 0.3s ease;
 }
 
-.brand-link:hover h2 {
-    color: #1d4ed8;
+.nav-links a:hover {
+    color: #2563eb;
 }
 
 .container {
@@ -64,6 +80,12 @@ h1 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.board-container {
+    position: relative;
+    display: inline-block;
+    padding: 30px 10px 30px 30px;
+}
+
 .chess-board {
     width: 560px;
     height: 560px;
@@ -74,6 +96,52 @@ h1 {
     grid-template-rows: repeat(8, 1fr);
     background: #8B4513;
     gap: 1px;
+}
+
+.board-coordinates {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    right: 10px;
+    bottom: 30px;
+    pointer-events: none;
+}
+
+.files-row {
+    position: absolute;
+    bottom: -25px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    font-weight: bold;
+    font-size: 16px;
+    color: #000;
+}
+
+.files-row span {
+    flex: 1;
+    text-align: center;
+}
+
+.ranks-column {
+    position: absolute;
+    left: -25px;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    font-weight: bold;
+    font-size: 16px;
+    color: #000;
+}
+
+.ranks-column span {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .square {
@@ -257,6 +325,12 @@ h1 {
     border-color: #e74c3c !important;
 }
 
+.warning {
+    color: #f39c12;
+    background-color: #fef5e7 !important;
+    border-color: #f39c12 !important;
+}
+
 .success {
     color: #27ae60;
     background-color: #eafaf1 !important;
@@ -289,11 +363,24 @@ h1 {
         max-width: 560px;
     }
     
+    .board-container {
+        width: 100%;
+        max-width: 560px;
+        padding: 25px 10px 25px 25px;
+    }
+    
     .chess-board {
         width: 100%;
         max-width: 560px;
         height: auto;
         aspect-ratio: 1;
+    }
+    
+    .board-coordinates {
+        left: 25px;
+        right: 10px;
+        top: 25px;
+        bottom: 25px;
     }
 }
 
@@ -302,8 +389,12 @@ h1 {
         padding: 0.75rem 1rem;
     }
     
-    .brand-link h2 {
+    .nav-brand h1 {
         font-size: 1.25rem;
+    }
+    
+    .nav-links {
+        font-size: 0.9rem;
     }
     
     .container {
@@ -322,6 +413,27 @@ h1 {
     .left-panel, .right-panel {
         padding: 15px;
         max-width: 100%;
+    }
+    
+    .board-container {
+        padding: 20px 8px 20px 20px;
+    }
+    
+    .board-coordinates {
+        left: 20px;
+        right: 8px;
+        top: 20px;
+        bottom: 20px;
+    }
+    
+    .files-row {
+        font-size: 14px;
+        bottom: -20px;
+    }
+    
+    .ranks-column {
+        font-size: 14px;
+        left: -20px;
     }
     
     .chess-board {
@@ -369,6 +481,18 @@ h1 {
 }
 
 @media (max-width: 480px) {
+    .nav {
+        padding: 0.75rem;
+    }
+    
+    .nav-brand h1 {
+        font-size: 1.1rem;
+    }
+    
+    .nav-links {
+        font-size: 0.85rem;
+    }
+    
     .container {
         padding: 10px;
     }
@@ -385,6 +509,27 @@ h1 {
     .left-panel, .right-panel {
         padding: 12px;
         border-radius: 8px;
+    }
+    
+    .board-container {
+        padding: 18px 6px 18px 18px;
+    }
+    
+    .board-coordinates {
+        left: 18px;
+        right: 6px;
+        top: 18px;
+        bottom: 18px;
+    }
+    
+    .files-row {
+        font-size: 12px;
+        bottom: -18px;
+    }
+    
+    .ranks-column {
+        font-size: 12px;
+        left: -18px;
     }
     
     .chess-board {
@@ -442,12 +587,37 @@ h1 {
 }
 
 @media (max-width: 360px) {
-    .brand-link h2 {
-        font-size: 1.1rem;
+    .nav-brand h1 {
+        font-size: 1rem;
+    }
+    
+    .nav-links {
+        font-size: 0.8rem;
     }
     
     h1 {
         font-size: 1.25rem;
+    }
+    
+    .board-container {
+        padding: 15px 5px 15px 15px;
+    }
+    
+    .board-coordinates {
+        left: 15px;
+        right: 5px;
+        top: 15px;
+        bottom: 15px;
+    }
+    
+    .files-row {
+        font-size: 11px;
+        bottom: -15px;
+    }
+    
+    .ranks-column {
+        font-size: 11px;
+        left: -15px;
     }
     
     .square {
