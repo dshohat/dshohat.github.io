@@ -1,26 +1,38 @@
 class ChessGame {
     constructor() {
-        this.board = this.initializeBoard();
-        this.currentPlayer = 'white';
-        this.selectedSquare = null;
-        this.moveHistory = [];
-        this.lastMove = null;
-        this.gameOver = false;
-        this.inCheck = false;
-        this.checkmate = false;
-        this.stalemate = false;
-        
-        // Track castling rights
-        this.castlingRights = {
-            white: { kingSide: true, queenSide: true },
-            black: { kingSide: true, queenSide: true }
-        };
-        
-        // Track en passant target square (null if not available)
-        this.enPassantTarget = null;
-        
-        this.createBoard();
-        this.updateDisplay();
+        // Try to load saved game first
+        if (this.loadGameState()) {
+            // Game loaded from localStorage
+            this.createBoard();
+            this.updateDisplay();
+            this.updateMoveHistory();
+            if (this.lastMove) {
+                this.updateLastMoveInfo();
+            }
+        } else {
+            // Start new game
+            this.board = this.initializeBoard();
+            this.currentPlayer = 'white';
+            this.selectedSquare = null;
+            this.moveHistory = [];
+            this.lastMove = null;
+            this.gameOver = false;
+            this.inCheck = false;
+            this.checkmate = false;
+            this.stalemate = false;
+            
+            // Track castling rights
+            this.castlingRights = {
+                white: { kingSide: true, queenSide: true },
+                black: { kingSide: true, queenSide: true }
+            };
+            
+            // Track en passant target square (null if not available)
+            this.enPassantTarget = null;
+            
+            this.createBoard();
+            this.updateDisplay();
+        }
     }
     
     initializeBoard() {
@@ -779,6 +791,9 @@ class ChessGame {
         this.updateDisplay();
         this.updateMoveHistory();
         this.showCurrentMove(moveNotation);
+        
+        // Save game state to localStorage
+        this.saveGameState();
     }
     
     getMoveNotation(piece, fromRow, fromCol, toRow, toCol, capturedPiece, promotedTo, isCastling, isEnPassant = false) {
@@ -1055,6 +1070,9 @@ class ChessGame {
         this.updateDisplay();
         this.updateMoveHistory();
         this.updateLastMoveInfo();
+        
+        // Save game state to localStorage
+        this.saveGameState();
     }
     
     getCastlingMove(kingSide) {
@@ -1504,6 +1522,9 @@ class ChessGame {
         this.updateDisplay();
         this.updateMoveHistory();
         this.updateLastMoveInfo();
+        
+        // Save game state to localStorage
+        this.saveGameState();
     }
     
     recalculateCastlingRights() {
@@ -1569,6 +1590,68 @@ class ChessGame {
         }
     }
     
+    
+    saveGameState() {
+        const gameState = {
+            board: this.board,
+            currentPlayer: this.currentPlayer,
+            moveHistory: this.moveHistory,
+            lastMove: this.lastMove,
+            gameOver: this.gameOver,
+            inCheck: this.inCheck,
+            checkmate: this.checkmate,
+            stalemate: this.stalemate,
+            castlingRights: this.castlingRights,
+            enPassantTarget: this.enPassantTarget
+        };
+        
+        try {
+            localStorage.setItem('chessGameState', JSON.stringify(gameState));
+        } catch (e) {
+            console.error('Failed to save game state:', e);
+        }
+    }
+    
+    loadGameState() {
+        try {
+            const savedState = localStorage.getItem('chessGameState');
+            if (!savedState) {
+                return false;
+            }
+            
+            const gameState = JSON.parse(savedState);
+            
+            // Restore all game state
+            this.board = gameState.board;
+            this.currentPlayer = gameState.currentPlayer;
+            this.moveHistory = gameState.moveHistory || [];
+            this.lastMove = gameState.lastMove || null;
+            this.gameOver = gameState.gameOver || false;
+            this.inCheck = gameState.inCheck || false;
+            this.checkmate = gameState.checkmate || false;
+            this.stalemate = gameState.stalemate || false;
+            this.castlingRights = gameState.castlingRights || {
+                white: { kingSide: true, queenSide: true },
+                black: { kingSide: true, queenSide: true }
+            };
+            this.enPassantTarget = gameState.enPassantTarget || null;
+            this.selectedSquare = null;
+            
+            return true;
+        } catch (e) {
+            console.error('Failed to load game state:', e);
+            return false;
+        }
+    }
+    
+    clearSavedGame() {
+        try {
+            localStorage.removeItem('chessGameState');
+        } catch (e) {
+            console.error('Failed to clear saved game:', e);
+        }
+    }
+    
     resetGame() {
         this.board = this.initializeBoard();
         this.currentPlayer = 'white';
@@ -1588,6 +1671,9 @@ class ChessGame {
         
         // Reset en passant target
         this.enPassantTarget = null;
+        
+        // Clear saved game
+        this.clearSavedGame();
         
         this.createBoard();
         this.updateDisplay();
