@@ -531,6 +531,7 @@
                 // Build episodes HTML
                 let episodesHtml = '';
                 podcast.episodes.forEach(episode => {
+                    console.log('Rendering episode:', episode.title, 'Audio file:', episode.audioFile);
                     episodesHtml += `
                         <div class="episode" id="${episode.id}">
                             <div class="episode-title">
@@ -605,7 +606,7 @@
             `;
             grid.appendChild(comingSoon);
 
-            // Track audio playback
+            // Track audio playback and errors
             document.querySelectorAll('audio').forEach(audio => {
                 audio.addEventListener('play', function() {
                     console.log('Playing:', this.src);
@@ -613,6 +614,15 @@
                 
                 audio.addEventListener('ended', function() {
                     console.log('Finished:', this.src);
+                });
+                
+                audio.addEventListener('error', function(e) {
+                    console.error('Audio error:', this.src, e);
+                    console.error('Error code:', this.error ? this.error.code : 'unknown');
+                });
+                
+                audio.addEventListener('loadedmetadata', function() {
+                    console.log('Audio loaded successfully:', this.src);
                 });
             });
         }
