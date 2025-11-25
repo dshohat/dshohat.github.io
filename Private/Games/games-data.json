@@ -1,0 +1,36 @@
+{
+    "games": [
+        {
+            "id": "chess",
+            "title": "Chess with a Friend",
+            "icon": "♟️",
+            "description": "Play chess with a friend on the same device. Features move validation, castling, en passant, and move history with import/export functionality.",
+            "path": "Chess/chess.html",
+            "tags": ["strategy", "classic", "two-player"],
+            "difficulty": "intermediate",
+            "features": [
+                "Full chess rules implementation",
+                "Move history and notation",
+                "Import/Export games",
+                "Undo functionality",
+                "Visual move validation"
+            ]
+        },
+        {
+            "id": "knight-chase",
+            "title": "Knight Chase",
+            "icon": "♞",
+            "description": "A strategic two-player game where knights chase each other on an 8×8 board. Squares you leave become blocked, creating an ever-shrinking battlefield!",
+            "path": "KnightChase/knight-chase.html",
+            "tags": ["strategy", "unique", "two-player"],
+            "difficulty": "easy",
+            "features": [
+                "Knight-only movement mechanics",
+                "Dynamic board blocking system",
+                "Multiple win conditions",
+                "Real-time statistics",
+                "Undo functionality"
+            ]
+        }
+    ]
+}

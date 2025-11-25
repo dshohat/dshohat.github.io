@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knight Chase</title>
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <a href="../../index.html" style="text-decoration: none; color: inherit;">
+                    <h1>Drory Shohat</h1>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../games.html">← My Games</a></li>
+                <li><a href="../../index.html">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <h1>Knight Chase</h1>
+        <p class="game-description">A strategic two-player game where knights chase each other across a shrinking board!</p>
+        
+        <div class="game-area">
+            <div class="left-panel">
+                <div class="game-info">
+                    <h3>Game Rules</h3>
+                    <ul class="rules-list">
+                        <li>Move like a chess knight (L-shape)</li>
+                        <li>Squares you leave become blocked</li>
+                        <li>Capture opponent or trap them to win</li>
+                        <li>Player 1 (Blue) starts at A1</li>
+                        <li>Player 2 (Red) starts at H8</li>
+                    </ul>
+                </div>
+                
+                <div class="game-status">
+                    <h3>Game Status</h3>
+                    <div id="currentPlayer" class="status-text">Player 1's Turn</div>
+                    <div id="gameMessage" class="message-text"></div>
+                </div>
+                
+                <div class="move-history">
+                    <h3>Move History</h3>
+                    <div id="moveList"></div>
+                </div>
+                
+                <div class="controls">
+                    <button onclick="game.resetGame()">New Game</button>
+                    <button onclick="game.undoLastMove()">Undo Move</button>
+                </div>
+            </div>
+            
+            <div class="board-wrapper">
+                <div class="board-container">
+                    <div class="coordinate-labels files">
+                        <div class="file-label">A</div>
+                        <div class="file-label">B</div>
+                        <div class="file-label">C</div>
+                        <div class="file-label">D</div>
+                        <div class="file-label">E</div>
+                        <div class="file-label">F</div>
+                        <div class="file-label">G</div>
+                        <div class="file-label">H</div>
+                    </div>
+                    
+                    <div class="rank-labels">
+                        <div class="rank-label">8</div>
+                        <div class="rank-label">7</div>
+                        <div class="rank-label">6</div>
+                        <div class="rank-label">5</div>
+                        <div class="rank-label">4</div>
+                        <div class="rank-label">3</div>
+                        <div class="rank-label">2</div>
+                        <div class="rank-label">1</div>
+                    </div>
+                    
+                    <div id="gameBoard" class="game-board"></div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="stats-section">
+                    <h3>Game Statistics</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Moves Made:</span>
+                        <span id="totalMoves" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Blocked Squares:</span>
+                        <span id="blockedCount" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Player 1 Available Moves:</span>
+                        <span id="player1Moves" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Player 2 Available Moves:</span>
+                        <span id="player2Moves" class="stat-value">0</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <h3>Legend</h3>
+                    <div class="legend-item">
+                        <div class="legend-square player1-square"></div>
+                        <span>Player 1 (Blue)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-square player2-square"></div>
+                        <span>Player 2 (Red)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-square blocked-square"></div>
+                        <span>Blocked</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-square valid-move"></div>
+                        <span>Valid Move</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
