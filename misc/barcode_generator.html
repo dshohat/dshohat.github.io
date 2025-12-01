@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcode Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"></script>
+  <style>
+    body { 
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      font-size: 18px;
+      box-sizing: border-box;
+      letter-spacing: 2px;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      margin-right: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .error-message {
+      color: #f44336;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+    .error-message.show {
+      display: block;
+    }
+    .barcode-wrapper {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      background-color: white;
+      margin-top: 10px;
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #barcode { 
+      display: none;
+      width: 100%;
+    }
+    #barcode.show {
+      display: block;
+    }
+    .saved-numbers {
+      margin-top: 30px;
+      border-top: 2px solid #ddd;
+      padding-top: 20px;
+    }
+    .saved-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      margin-bottom: 5px;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+    }
+    .saved-item:hover {
+      background-color: #e8e8e8;
+    }
+    .saved-item-info {
+      flex: 1;
+      cursor: pointer;
+    }
+    .saved-item-name {
+      font-weight: bold;
+      color: #333;
+    }
+    .saved-item-number {
+      color: #666;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+    .delete-btn {
+      background-color: #f44336;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+    .delete-btn:hover {
+      background-color: #da190b;
+    }
+    .save-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .save-controls input {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="input-group">
+    <label for="numberInput">Your WWID:</label>
+    <input type="text" id="numberInput" maxlength="8" placeholder="Enter your WWID">
+    <div class="error-message" id="errorMessage">Please enter exactly 8 digits (0-9 only)</div>
+  </div>
+
+  <div class="input-group">
+    <label for="formatSelect">Barcode Format:</label>
+    <select id="formatSelect">
+      <option value="CODE39" selected>CODE39 (Auto)</option>
+      <option value="CODE128">CODE128</option>
+      <option value="CODE128A">CODE128A</option>
+      <option value="CODE128B">CODE128B</option>
+      <option value="CODE128C">CODE128C</option>
+      <option value="EAN13">EAN13 (requires check digit)</option>
+      <option value="EAN8">EAN8</option>
+      <option value="EAN5">EAN5 (5 digits)</option>
+      <option value="EAN2">EAN2 (2 digits)</option>
+      <option value="UPC">UPC</option>
+      <option value="ITF14">ITF14</option>
+      <option value="MSI">MSI</option>
+      <option value="MSI10">MSI10</option>
+      <option value="MSI11">MSI11</option>
+      <option value="MSI1010">MSI1010</option>
+      <option value="MSI1110">MSI1110</option>
+      <option value="pharmacode">Pharmacode</option>
+    </select>
+  </div>
+
+  <div class="barcode-wrapper">
+    <svg id="barcode"></svg>
+  </div>
+
+  <div class="save-controls">
+    <input type="text" id="nameInput" placeholder="Enter name for this number" maxlength="50">
+    <button id="saveBtn">Save Number</button>
+  </div>
+
+  <div class="saved-numbers">
+    <h3>Saved Numbers (0/8)</h3>
+    <div id="savedList"></div>
+  </div>
+
+  <script>
+    const numberInput = document.getElementById('numberInput');
+    const formatSelect = document.getElementById('formatSelect');
+    const errorMessage = document.getElementById('errorMessage');
+    const barcodeElement = document.getElementById('barcode');
+    const nameInput = document.getElementById('nameInput');
+    const saveBtn = document.getElementById('saveBtn');
+    const savedList = document.getElementById('savedList');
+
+    // LocalStorage key
+    const STORAGE_KEY = 'saved_barcodes';
+    const MAX_SAVED = 8;
+
+    // Load saved numbers on page load
+    loadSavedNumbers();
+
+    // Allow only digits
+    numberInput.addEventListener('input', function(e) {
+      this.value = this.value.replace(/[^0-9]/g, '');
+      validateAndGenerate();
+    });
+
+    // Generate on format change
+    formatSelect.addEventListener('change', validateAndGenerate);
+
+    // Save button click
+    saveBtn.addEventListener('click', saveNumber);
+
+    function validateAndGenerate() {
+      const value = numberInput.value;
+      const isValid = /^\d{8}$/.test(value);
+      
+      if (value.length > 0 && !isValid) {
+        errorMessage.classList.add('show');
+        barcodeElement.classList.remove('show');
+        return;
+      } else {
+        errorMessage.classList.remove('show');
+      }
+
+      if (isValid) {
+        generateBarcode();
+      }
+    }
+
+    function generateBarcode() {
+      const number = numberInput.value;
+      const format = formatSelect.value;
+      
+      try {
+        JsBarcode("#barcode", number, {
+          format: format,
+          width: 3,         // Wider bars to fill width
+          height: 360,      // 6x taller (doubled from 180)
+          displayValue: true,
+          fontSize: 20,     // Size of the number below
+          margin: 10        // Small margin
+        });
+        barcodeElement.classList.add('show');
+      } catch (error) {
+        console.error('Barcode generation error:', error);
+        errorMessage.textContent = 'Error: ' + error.message;
+        errorMessage.classList.add('show');
+        barcodeElement.classList.remove('show');
+      }
+    }
+
+    function saveNumber() {
+      const number = numberInput.value;
+      const name = nameInput.value.trim();
+
+      if (!/^\d{8}$/.test(number)) {
+        alert('Please enter a valid 8-digit number');
+        return;
+      }
+
+      if (!name) {
+        alert('Please enter a name for this number');
+        return;
+      }
+
+      const saved = getSavedNumbers();
+
+      if (saved.length >= MAX_SAVED) {
+        alert(`Maximum ${MAX_SAVED} numbers can be saved`);
+        return;
+      }
+
+      // Check for duplicate name
+      if (saved.some(item => item.name === name)) {
+        alert('A number with this name already exists');
+        return;
+      }
+
+      saved.push({ name, number, format: formatSelect.value });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      nameInput.value = '';
+      loadSavedNumbers();
+    }
+
+    function getSavedNumbers() {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    }
+
+    function loadSavedNumbers() {
+      const saved = getSavedNumbers();
+      const heading = document.querySelector('.saved-numbers h3');
+      heading.textContent = `Saved Numbers (${saved.length}/${MAX_SAVED})`;
+
+      if (saved.length === 0) {
+        savedList.innerHTML = '<p style="color: #999; font-style: italic;">No saved numbers yet</p>';
+        return;
+      }
+
+      savedList.innerHTML = saved.map((item, index) => `
+        <div class="saved-item">
+          <div class="saved-item-info" onclick="loadNumber(${index})">
+            <div class="saved-item-name">${escapeHtml(item.name)}</div>
+            <div class="saved-item-number">${item.number} (${item.format})</div>
+          </div>
+          <button class="delete-btn" onclick="deleteNumber(${index})">Delete</button>
+        </div>
+      `).join('');
+    }
+
+    function loadNumber(index) {
+      const saved = getSavedNumbers();
+      const item = saved[index];
+      numberInput.value = item.number;
+      formatSelect.value = item.format;
+      validateAndGenerate();
+    }
+
+    function deleteNumber(index) {
+      if (!confirm('Delete this saved number?')) return;
+      const saved = getSavedNumbers();
+      saved.splice(index, 1);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      loadSavedNumbers();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Generate on page load if value exists
+    if (numberInput.value) {
+      validateAndGenerate();
+    }
+  </script>
+</body>
+</html>
