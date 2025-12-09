@@ -71,6 +71,55 @@ localStorage.setItem('chess-game', JSON.stringify(state));
 const saved = JSON.parse(localStorage.getItem('chess-game'));
 ```
 
+### Full Undo Pattern (Backgammon)
+```javascript
+// Store complete game snapshots for undo across turns
+this.fullHistory = []; // Array of complete state snapshots
+
+saveSnapshot() {
+    this.fullHistory.push({
+        board: JSON.parse(JSON.stringify(this.board)),
+        bar: { ...this.bar },
+        home: { ...this.home },
+        currentPlayer: this.currentPlayer,
+        dice: [...this.dice],
+        // ... all relevant state
+    });
+}
+
+undoMove() {
+    if (this.fullHistory.length > 0) {
+        const snapshot = this.fullHistory.pop();
+        // Restore all state from snapshot
+        this.board = snapshot.board;
+        this.bar = snapshot.bar;
+        // ...
+    }
+}
+```
+
+### Selection Highlighting Pattern
+When user must choose between multiple valid targets:
+```javascript
+// Set selection state
+this.selectedPoint = 'bar'; // or a point number
+
+// Calculate and highlight valid targets
+const validPoints = this.getValidBarEntryPoints();
+validPoints.forEach(point => {
+    element.classList.add('valid-move');
+});
+
+// Handle click on highlighted target
+handleClick(targetPoint) {
+    if (this.selectedPoint !== null) {
+        this.executeMove(this.selectedPoint, targetPoint);
+        this.clearHighlights();
+        this.selectedPoint = null;
+    }
+}
+```
+
 ## Performance Considerations
 
 ### Optimizations Applied

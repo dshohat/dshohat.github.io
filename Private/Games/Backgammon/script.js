@@ -66,6 +66,7 @@ class BackgammonGame {
                 this.dice = state.dice || [];
                 this.availableMoves = state.availableMoves || [];
                 this.hasRolled = state.hasRolled || false;
+                this.fullHistory = state.fullHistory || [];
             } else {
                 this.initializeBoard();
             }
@@ -89,7 +90,8 @@ class BackgammonGame {
                 gameOver: this.gameOver,
                 dice: this.dice,
                 availableMoves: this.availableMoves,
-                hasRolled: this.hasRolled
+                hasRolled: this.hasRolled,
+                fullHistory: this.fullHistory || []
             };
             localStorage.setItem('backgammon-game', JSON.stringify(state));
         } catch (e) {
@@ -123,7 +125,25 @@ class BackgammonGame {
         this.availableMoves = [];
         this.hasRolled = false;
         this.moveHistory = [];
+        this.fullHistory = [];
         this.selectedPoint = null;
+    }
+    
+    // Save a snapshot for full undo capability
+    saveSnapshot() {
+        this.fullHistory.push({
+            points: [...this.points],
+            bar: { ...this.bar },
+            borneOff: { ...this.borneOff },
+            currentPlayer: this.currentPlayer,
+            dice: [...this.dice],
+            availableMoves: [...this.availableMoves],
+            hasRolled: this.hasRolled
+        });
+        // Limit history to prevent memory issues (keep last 50 moves)
+        if (this.fullHistory.length > 50) {
+            this.fullHistory.shift();
+        }
     }
     
     // ==================== Dice Rolling ====================
@@ -363,22 +383,33 @@ class BackgammonGame {
         
         const player = this.currentPlayer;
         
-        // If player has pieces on bar, must enter them first
+        // If player has pieces on bar and is selecting entry point
         if (this.bar[player] > 0) {
+            if (this.selectedPoint === 'bar') {
+                // User is choosing where to enter from bar
+                if (this.handleBarEntryClick(point)) {
+                    return;
+                }
+                // If clicked point wasn't valid, just deselect
+                this.selectedPoint = null;
+                this.renderBoard();
+                return;
+            }
+            // Start bar entry selection
             this.handleBarClick();
             return;
         }
         
         // If clicking on bearing off area
         if (point === 'bearOff') {
-            if (this.selectedPoint !== null) {
+            if (this.selectedPoint !== null && this.selectedPoint !== 'bar') {
                 this.tryBearOff();
             }
             return;
         }
         
         // If a piece is already selected
-        if (this.selectedPoint !== null) {
+        if (this.selectedPoint !== null && this.selectedPoint !== 'bar') {
             // If clicking on same point, deselect
             if (this.selectedPoint === point) {
                 this.selectedPoint = null;
@@ -414,7 +445,8 @@ class BackgammonGame {
         const player = this.currentPlayer;
         if (this.bar[player] === 0) return;
         
-        // Try to enter from bar with each available die
+        // Get all valid entry points
+        const validEntries = [];
         for (let i = 0; i < this.availableMoves.length; i++) {
             const die = this.availableMoves[i];
             if (this.canEnterFromBar(die)) {
@@ -424,15 +456,73 @@ class BackgammonGame {
                 } else {
                     targetPoint = die;
                 }
-                
-                // Execute the move
-                this.executeBarEntry(targetPoint, i);
-                this.afterMove();
-                return;
+                // Avoid duplicates (for doubles)
+                if (!validEntries.find(e => e.targetPoint === targetPoint)) {
+                    validEntries.push({ targetPoint, dieIndex: i, die });
+                }
             }
         }
         
-        this.showMessage("No valid entry point available!");
+        if (validEntries.length === 0) {
+            this.showMessage("No valid entry point available!");
+            return;
+        }
+        
+        // If only one option, execute immediately
+        if (validEntries.length === 1) {
+            this.executeBarEntry(validEntries[0].targetPoint, validEntries[0].dieIndex);
+            this.afterMove();
+            return;
+        }
+        
+        // Multiple options - highlight valid entry points and let user choose
+        this.selectedPoint = 'bar';
+        this.showMessage("Click a highlighted point to enter from bar");
+        this.renderBoard();
+    }
+    
+    handleBarEntryClick(point) {
+        const player = this.currentPlayer;
+        
+        // Find the die that gets us to this point
+        for (let i = 0; i < this.availableMoves.length; i++) {
+            const die = this.availableMoves[i];
+            let targetPoint;
+            if (player === 'white') {
+                targetPoint = 25 - die;
+            } else {
+                targetPoint = die;
+            }
+            
+            if (targetPoint === point && this.canEnterFromBar(die)) {
+                this.selectedPoint = null;
+                this.executeBarEntry(targetPoint, i);
+                this.afterMove();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    getValidBarEntryPoints() {
+        const player = this.currentPlayer;
+        const validPoints = [];
+        
+        for (const die of this.availableMoves) {
+            if (this.canEnterFromBar(die)) {
+                let targetPoint;
+                if (player === 'white') {
+                    targetPoint = 25 - die;
+                } else {
+                    targetPoint = die;
+                }
+                if (!validPoints.includes(targetPoint)) {
+                    validPoints.push(targetPoint);
+                }
+            }
+        }
+        
+        return validPoints;
     }
     
     tryMove(from, to) {
@@ -484,6 +574,9 @@ class BackgammonGame {
         const player = this.currentPlayer;
         const opponent = player === 'white' ? 'black' : 'white';
         
+        // Save snapshot before move for full undo
+        this.saveSnapshot();
+        
         // Save move for undo
         this.moveHistory.push({
             type: 'move',
@@ -520,6 +613,9 @@ class BackgammonGame {
         const player = this.currentPlayer;
         const opponent = player === 'white' ? 'black' : 'white';
         
+        // Save snapshot before move for full undo
+        this.saveSnapshot();
+        
         // Save move for undo
         this.moveHistory.push({
             type: 'barEntry',
@@ -551,6 +647,9 @@ class BackgammonGame {
     
     executeBearOff(from, dieIndex) {
         const player = this.currentPlayer;
+        
+        // Save snapshot before move for full undo
+        this.saveSnapshot();
         
         // Save move for undo
         this.moveHistory.push({
@@ -633,61 +732,23 @@ class BackgammonGame {
     // ==================== Undo ====================
     
     undoMove() {
-        if (this.moveHistory.length === 0 || this.gameOver) return;
+        if (this.fullHistory.length === 0 || this.gameOver) return;
         
-        const lastMove = this.moveHistory.pop();
-        const player = this.currentPlayer;
-        const opponent = player === 'white' ? 'black' : 'white';
+        // Restore from full history snapshot
+        const snapshot = this.fullHistory.pop();
         
-        if (lastMove.type === 'move') {
-            // Undo regular move
-            if (player === 'white') {
-                this.points[lastMove.to]--;
-                this.points[lastMove.from]++;
-            } else {
-                this.points[lastMove.to]++;
-                this.points[lastMove.from]--;
-            }
-            
-            // Undo capture
-            if (lastMove.captured) {
-                this.bar[opponent]--;
-                if (opponent === 'white') {
-                    this.points[lastMove.to]++;
-                } else {
-                    this.points[lastMove.to]--;
-                }
-            }
-        } else if (lastMove.type === 'barEntry') {
-            // Undo bar entry
-            this.bar[player]++;
-            if (player === 'white') {
-                this.points[lastMove.to]--;
-            } else {
-                this.points[lastMove.to]++;
-            }
-            
-            // Undo capture
-            if (lastMove.captured) {
-                this.bar[opponent]--;
-                if (opponent === 'white') {
-                    this.points[lastMove.to]++;
-                } else {
-                    this.points[lastMove.to]--;
-                }
-            }
-        } else if (lastMove.type === 'bearOff') {
-            // Undo bear off
-            this.borneOff[player]--;
-            if (player === 'white') {
-                this.points[lastMove.from]++;
-            } else {
-                this.points[lastMove.from]--;
-            }
+        this.points = snapshot.points;
+        this.bar = snapshot.bar;
+        this.borneOff = snapshot.borneOff;
+        this.currentPlayer = snapshot.currentPlayer;
+        this.dice = snapshot.dice;
+        this.availableMoves = snapshot.availableMoves;
+        this.hasRolled = snapshot.hasRolled;
+        
+        // Also pop from moveHistory to keep in sync
+        if (this.moveHistory.length > 0) {
+            this.moveHistory.pop();
         }
-        
-        // Restore the die
-        this.availableMoves.splice(lastMove.dieIndex, 0, lastMove.die);
         
         this.selectedPoint = null;
         this.renderBoard();
@@ -717,9 +778,24 @@ class BackgammonGame {
         rollBtn.disabled = this.hasRolled || this.gameOver;
         
         // Highlight valid moves
-        if (this.selectedPoint !== null) {
+        if (this.selectedPoint !== null && this.selectedPoint !== 'bar') {
             this.highlightValidMoves();
         }
+        
+        // Highlight valid bar entry points
+        if (this.selectedPoint === 'bar') {
+            this.highlightBarEntryPoints();
+        }
+    }
+    
+    highlightBarEntryPoints() {
+        const validPoints = this.getValidBarEntryPoints();
+        validPoints.forEach(point => {
+            const pointEl = document.querySelector(`.point[data-point="${point}"]`);
+            if (pointEl) {
+                pointEl.classList.add('valid-target');
+            }
+        });
     }
     
     renderPoint(pointNum) {
