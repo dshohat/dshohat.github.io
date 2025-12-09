@@ -6,6 +6,11 @@
 - [x] Knight Chase game added to Games section
 - [x] Four in a Row game added (classic Connect 4)
 - [x] Backgammon game added with full rules, gammon scoring, best of 5 matches
+- [x] Backgammon enhanced with:
+  - Full undo across turns (fullHistory snapshot system)
+  - Bar entry selection when multiple entry points available
+  - Fixed triangle colors (light=odd, dark=even)
+  - Mobile-responsive layout (dice section below board on small screens)
 - [x] Games reorganized into `/Private/Games/` folder
 - [x] My Games gallery page created
 - [x] Navigation paths fixed across all game files
@@ -31,7 +36,7 @@ Games collection now includes 4 fully-functional games:
 1. **Chess** - Full implementation with import/export
 2. **Knight Chase** - Unique blocking mechanic game
 3. **Four in a Row** - Classic Connect 4 with score tracking
-4. **Backgammon** - Full rules with gammon (2 pts) and best of 5 matches
+4. **Backgammon** - Full rules with gammon (2 pts), best of 5 matches, full undo, mobile-responsive
 
 ### Common Game Features
 All games share these patterns:
@@ -41,6 +46,12 @@ All games share these patterns:
 - Modal announcements for wins
 - Consistent purple gradient header design
 - Responsive layout
+
+### Backgammon-Specific Patterns
+- **fullHistory array**: Stores complete game state snapshots before each move for undo across turns
+- **Bar entry selection**: When piece on bar has multiple valid entry points, highlights options and lets user click to choose
+- **Triangle colors**: Light reddish (#c17f59) for odd-numbered points, dark brown (#8B4513) for even-numbered points
+- **Mobile layout**: Uses CSS `order` property to reposition dice section below board on screens < 600px
 
 ## Recent Decisions
 

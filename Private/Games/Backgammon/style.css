@@ -86,21 +86,17 @@ h1 {
     width: 260px;
     background: white;
     border-radius: 12px;
-    padding: 20px;
+    padding: 12px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .left-panel h3, .right-panel h3 {
-    color: #667eea;
-    margin-bottom: 15px;
-    font-size: 1rem;
-    border-bottom: 2px solid #667eea;
-    padding-bottom: 8px;
+    display: none;
 }
 
 /* Match Score */
 .match-info {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .match-score {
@@ -109,7 +105,7 @@ h1 {
     justify-content: space-between;
     background: #f8f9fa;
     border-radius: 10px;
-    padding: 15px;
+    padding: 10px;
 }
 
 .player-score {
@@ -136,22 +132,18 @@ h1 {
 }
 
 .match-status {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: 500;
+    display: none;
 }
 
 /* Game Status */
 .game-status {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .status-text {
     font-size: 1.1rem;
     font-weight: bold;
-    padding: 12px;
+    padding: 8px;
     background: #f0f4ff;
     border-radius: 8px;
     text-align: center;
@@ -182,14 +174,14 @@ h1 {
 
 /* Dice Section */
 .dice-section {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .dice-container {
     display: flex;
     justify-content: center;
     gap: 15px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .die {
@@ -233,8 +225,8 @@ h1 {
 
 #rollButton {
     width: 100%;
-    padding: 12px;
-    font-size: 1rem;
+    padding: 8px;
+    font-size: 0.9rem;
     font-weight: 600;
     border: none;
     border-radius: 8px;
@@ -258,12 +250,12 @@ h1 {
 .controls {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
 }
 
 .controls button {
-    padding: 10px;
-    font-size: 0.9rem;
+    padding: 8px;
+    font-size: 0.85rem;
     font-weight: 600;
     border: none;
     border-radius: 8px;
@@ -362,10 +354,16 @@ h1 {
 .board-half {
     display: flex;
     height: 200px;
+    align-items: flex-start;
 }
 
 .top-half {
     border-bottom: 3px solid #8B4513;
+    align-items: flex-start;
+}
+
+.bottom-half {
+    align-items: flex-end;
 }
 
 .quadrant {
@@ -415,21 +413,41 @@ h1 {
     border-bottom: 160px solid;
 }
 
-/* Point colors */
-.top-left .point:nth-child(odd)::before,
-.top-right .point:nth-child(even)::before,
-.bottom-left .point:nth-child(even)::before,
-.bottom-right .point:nth-child(odd)::before {
-    border-top-color: #8B4513;
-    border-bottom-color: #8B4513;
+/* Point colors - Light (tan) for odd numbers, Dark (brown) for even numbers */
+/* Top-left has points 13-18, top-right has 19-24 */
+/* Bottom-left has 12-7, bottom-right has 6-1 */
+
+/* Point 13 is odd (1st child in top-left) - light */
+/* Point 14 is even (2nd child) - dark */
+.top-left .point:nth-child(odd)::before {
+    border-top-color: #c17f59; /* light reddish for odd: 13, 15, 17 */
+}
+.top-left .point:nth-child(even)::before {
+    border-top-color: #8B4513; /* dark brown for even: 14, 16, 18 */
 }
 
-.top-left .point:nth-child(even)::before,
-.top-right .point:nth-child(odd)::before,
-.bottom-left .point:nth-child(odd)::before,
+/* Point 19 is odd (1st child in top-right) - light */
+.top-right .point:nth-child(odd)::before {
+    border-top-color: #c17f59; /* light reddish for odd: 19, 21, 23 */
+}
+.top-right .point:nth-child(even)::before {
+    border-top-color: #8B4513; /* dark brown for even: 20, 22, 24 */
+}
+
+/* Point 12 is even (1st child in bottom-left) - dark */
+.bottom-left .point:nth-child(odd)::before {
+    border-bottom-color: #8B4513; /* dark brown for even: 12, 10, 8 */
+}
+.bottom-left .point:nth-child(even)::before {
+    border-bottom-color: #c17f59; /* light reddish for odd: 11, 9, 7 */
+}
+
+/* Point 6 is even (1st child in bottom-right) - dark */
+.bottom-right .point:nth-child(odd)::before {
+    border-bottom-color: #8B4513; /* dark brown for even: 6, 4, 2 */
+}
 .bottom-right .point:nth-child(even)::before {
-    border-top-color: #654321;
-    border-bottom-color: #654321;
+    border-bottom-color: #c17f59; /* light reddish for odd: 5, 3, 1 */
 }
 
 .point.valid-move {
@@ -484,6 +502,7 @@ h1 {
     padding: 10px 0;
     cursor: pointer;
     transition: all 0.3s ease;
+    align-self: stretch;
 }
 
 .bar-section.active {
@@ -889,7 +908,119 @@ h1 {
         font-size: 0.85rem;
     }
     
-    .left-panel, .right-panel {
+    /* Mobile layout: reorder panels */
+    .game-area {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Left panel: match info and current turn at top */
+    .left-panel {
+        order: 1;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .left-panel .match-info {
+        flex: 1;
+        min-width: 140px;
+    }
+    
+    .left-panel .game-status {
+        flex: 1;
+        min-width: 140px;
+    }
+    
+    /* Hide dice and controls from left panel - they go after board */
+    .left-panel .dice-section,
+    .left-panel .controls {
+        display: none;
+    }
+    
+    /* Board in the middle */
+    .board-wrapper {
+        order: 2;
+    }
+    
+    /* Right panel reorganized for mobile */
+    .right-panel {
+        order: 3;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Reset and use display:contents to break out of left-panel */
+    .left-panel {
+        display: contents;
+    }
+    
+    .left-panel .match-info,
+    .left-panel .game-status {
+        background: white;
+        border-radius: 8px;
+        padding: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+    }
+    
+    .left-panel .dice-section,
+    .left-panel .controls {
+        background: white;
+        border-radius: 8px;
+        padding: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    /* Create a 2-column grid for the game area */
+    .game-area {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        align-items: stretch;
+    }
+    
+    .left-panel .match-info {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    
+    .left-panel .game-status {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    
+    .board-wrapper {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+    
+    .left-panel .dice-section {
+        grid-column: 1;
+        grid-row: 3;
+        display: block;
+        margin-bottom: 0;
+    }
+    
+    .left-panel .controls {
+        grid-column: 2;
+        grid-row: 3;
+        display: flex;
+    }
+    
+    .right-panel {
+        grid-column: 1 / -1;
+        grid-row: 4;
+    }
+    
+    .right-panel {
         padding: 15px;
     }
     

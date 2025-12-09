@@ -46,8 +46,10 @@
   - [x] Bearing off with proper validation
   - [x] Gammon detection (2 points)
   - [x] Best of 5 match scoring
-  - [x] Undo functionality
+  - [x] Full undo across turns (using fullHistory snapshots)
+  - [x] Bar entry point selection when multiple options available
   - [x] Game state persistence
+  - [x] Mobile-responsive layout (dice below board on small screens)
 
 ### Recipes Section
 - [x] Recipes gallery page

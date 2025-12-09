@@ -91,7 +91,7 @@ Interactive browser-based games with modern UI:
 | **Chess with a Friend** | Full chess implementation for two players | Move validation, castling, en passant, import/export, undo |
 | **Knight Chase** | Strategic knight-vs-knight on shrinking board | Blocking mechanics, multiple win conditions, statistics |
 | **Four in a Row** | Classic Connect Four game | 7×6 grid, win detection, score tracking, persistence |
-| **Backgammon** | Classic dice-based race game | Full rules, gammon scoring (2 pts), best of 5 matches, persistence |
+| **Backgammon** | Classic dice-based race game | Full rules, gammon scoring (2 pts), best of 5 matches, full undo across turns, mobile-responsive |
 
 #### 🎙️ My Podcasts (`/Private/Podcasts/`)
 Family podcast series in Hebrew featuring:
