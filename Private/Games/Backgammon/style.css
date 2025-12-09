@@ -801,52 +801,253 @@ h1 {
     }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
+    .board-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        padding: 10px 0;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .board-container {
+        padding: 10px;
+        min-width: fit-content;
+    }
+    
     .point {
-        width: 35px;
-        height: 140px;
+        width: 38px;
+        height: 150px;
     }
     
     .point::before {
-        border-left-width: 17px;
-        border-right-width: 17px;
+        border-left-width: 18px;
+        border-right-width: 18px;
     }
     
     .top-half .point::before {
-        border-top-width: 120px;
+        border-top-width: 130px;
     }
     
     .bottom-half .point::before {
-        border-bottom-width: 120px;
+        border-bottom-width: 130px;
     }
     
     .piece {
-        width: 30px;
-        height: 30px;
-    }
-    
-    .piece.stacked {
-        margin-top: -20px;
+        width: 32px;
+        height: 32px;
     }
     
     .board-half {
-        height: 160px;
+        height: 170px;
     }
     
     .bar-section {
-        width: 40px;
+        width: 45px;
     }
     
     .point-numbers span {
-        width: 35px;
-        font-size: 0.6rem;
+        width: 38px;
+        font-size: 0.65rem;
     }
     
     .point-numbers .bar-spacer {
-        width: 40px;
+        width: 45px;
     }
     
     .bearing-off-area {
         width: 50px;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px 5px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .game-description {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    .nav {
+        padding: 0.75rem 1rem;
+    }
+    
+    .nav-brand h1 {
+        font-size: 1.2rem;
+    }
+    
+    .nav-links {
+        gap: 1rem;
+    }
+    
+    .nav-links a {
+        font-size: 0.85rem;
+    }
+    
+    .left-panel, .right-panel {
+        padding: 15px;
+    }
+    
+    .left-panel h3, .right-panel h3 {
+        font-size: 0.9rem;
+    }
+    
+    .board-wrapper {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        padding: 10px;
+    }
+    
+    .board-container {
+        padding: 8px;
+        transform-origin: center;
+    }
+    
+    .point {
+        width: 28px;
+        height: 120px;
+    }
+    
+    .point::before {
+        border-left-width: 13px;
+        border-right-width: 13px;
+    }
+    
+    .top-half .point::before {
+        border-top-width: 100px;
+    }
+    
+    .bottom-half .point::before {
+        border-bottom-width: 100px;
+    }
+    
+    .piece {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .board-half {
+        height: 135px;
+    }
+    
+    .bar-section {
+        width: 30px;
+        padding: 5px 0;
+    }
+    
+    .bar-piece {
+        width: 22px !important;
+        height: 22px !important;
+    }
+    
+    .point-numbers span {
+        width: 28px;
+        font-size: 0.5rem;
+    }
+    
+    .point-numbers .bar-spacer {
+        width: 30px;
+    }
+    
+    .bearing-off-area {
+        width: 35px;
+        padding: 5px 3px;
+    }
+    
+    .bearing-off-label {
+        font-size: 0.5rem;
+    }
+    
+    .borne-off-piece {
+        width: 20px !important;
+        height: 6px !important;
+    }
+    
+    .dice-container {
+        gap: 10px;
+    }
+    
+    .die {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+    
+    .match-score {
+        padding: 10px;
+    }
+    
+    .match-points {
+        font-size: 1.5rem;
+    }
+    
+    .controls button {
+        padding: 8px;
+        font-size: 0.85rem;
+    }
+    
+    #rollButton {
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .point {
+        width: 24px;
+        height: 100px;
+    }
+    
+    .point::before {
+        border-left-width: 11px;
+        border-right-width: 11px;
+    }
+    
+    .top-half .point::before {
+        border-top-width: 85px;
+    }
+    
+    .bottom-half .point::before {
+        border-bottom-width: 85px;
+    }
+    
+    .piece {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .board-half {
+        height: 115px;
+    }
+    
+    .bar-section {
+        width: 24px;
+    }
+    
+    .bar-piece {
+        width: 18px !important;
+        height: 18px !important;
+    }
+    
+    .point-numbers span {
+        width: 24px;
+        font-size: 0.45rem;
+    }
+    
+    .point-numbers .bar-spacer {
+        width: 24px;
+    }
+    
+    .bearing-off-area {
+        width: 28px;
+    }
+    
+    .bearing-off-label {
+        font-size: 0.4rem;
     }
 }

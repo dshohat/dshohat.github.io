@@ -739,15 +739,20 @@ class BackgammonGame {
             // Determine if point is on top or bottom half
             const isTopHalf = pointNum >= 13;
             
+            // Calculate piece spacing based on point height
+            const pointHeight = pointEl.offsetHeight || 180;
+            const pieceSize = Math.min(38, pointHeight * 0.21);
+            const spacing = pieceSize * 0.75;
+            
             // Create pieces (max 5 visible, then show count)
             const displayCount = Math.min(count, 5);
             for (let i = 0; i < displayCount; i++) {
                 const piece = document.createElement('div');
                 piece.className = `piece ${color}-piece`;
                 if (isTopHalf) {
-                    piece.style.top = `${i * 28}px`;
+                    piece.style.top = `${i * spacing}px`;
                 } else {
-                    piece.style.bottom = `${i * 28}px`;
+                    piece.style.bottom = `${i * spacing}px`;
                 }
                 pointEl.appendChild(piece);
             }
@@ -758,9 +763,9 @@ class BackgammonGame {
                 countEl.className = 'piece-count';
                 countEl.textContent = count;
                 if (isTopHalf) {
-                    countEl.style.top = `${displayCount * 28}px`;
+                    countEl.style.top = `${displayCount * spacing}px`;
                 } else {
-                    countEl.style.bottom = `${displayCount * 28}px`;
+                    countEl.style.bottom = `${displayCount * spacing}px`;
                 }
                 pointEl.appendChild(countEl);
             }
@@ -1053,6 +1058,15 @@ class BackgammonGame {
                 e.preventDefault();
                 this.undoMove();
             }
+        });
+        
+        // Re-render on resize for responsive piece positioning
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                this.renderBoard();
+            }, 150);
         });
     }
 }
