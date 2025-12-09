@@ -99,6 +99,26 @@
       "type": "page",
       "section": "home",
       "tags": ["projects", "home", "private", "פרוייקטים"]
+    },
+    {
+      "id": "page-four-in-a-row",
+      "title": "Four in a Row",
+      "titleEnglish": "Four in a Row",
+      "url": "/Private/Games/FourInARow/four-in-a-row.html",
+      "content": "Four in a Row Connect Four classic strategy game drop pieces columns connect four horizontal vertical diagonal win red yellow two player score tracking undo move new game 7 columns 6 rows grid board game",
+      "type": "project",
+      "section": "games",
+      "tags": ["game", "strategy", "connect four", "two-player", "classic"]
+    },
+    {
+      "id": "page-backgammon",
+      "title": "Backgammon",
+      "titleEnglish": "Backgammon",
+      "url": "/Private/Games/Backgammon/backgammon.html",
+      "content": "Backgammon classic strategy dice game race bear off pieces blocking hitting opponent gammon scoring best of 5 match white black two player dice roll points bar capture blot undo move new game ancient board game",
+      "type": "project",
+      "section": "games",
+      "tags": ["game", "strategy", "backgammon", "two-player", "classic", "dice"]
     }
   ]
 }

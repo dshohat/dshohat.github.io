@@ -31,6 +31,41 @@
                 "Real-time statistics",
                 "Undo functionality"
             ]
+        },
+        {
+            "id": "four-in-a-row",
+            "title": "Four in a Row",
+            "icon": "🔴",
+            "description": "The classic Connect Four game! Drop your colored pieces into a 7×6 grid and be the first to connect four in a row - horizontally, vertically, or diagonally.",
+            "path": "FourInARow/four-in-a-row.html",
+            "tags": ["strategy", "classic", "two-player"],
+            "difficulty": "easy",
+            "features": [
+                "Classic 7×6 grid gameplay",
+                "Win detection (horizontal, vertical, diagonal)",
+                "Score tracking with persistence",
+                "Animated piece drops",
+                "Undo functionality"
+            ]
+        },
+        {
+            "id": "backgammon",
+            "title": "Backgammon",
+            "icon": "🎲",
+            "description": "The ancient game of skill and strategy! Race to bear off all your pieces while blocking and hitting your opponent. Features gammon scoring and best of 5 matches.",
+            "path": "Backgammon/backgammon.html",
+            "tags": ["strategy", "classic", "two-player", "dice"],
+            "difficulty": "intermediate",
+            "features": [
+                "Full backgammon rules implementation",
+                "Dice rolling with doubles handling",
+                "Capture mechanics (blots to bar)",
+                "Bearing off with proper validation",
+                "Gammon detection (2 pts)",
+                "Best of 5 match scoring",
+                "Undo functionality",
+                "Game state persistence"
+            ]
         }
     ]
 }
