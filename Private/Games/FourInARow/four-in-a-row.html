@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Four in a Row</title>
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <a href="../../index.html" style="text-decoration: none; color: inherit;">
+                    <h1>Drory Shohat</h1>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../games.html">← My Games</a></li>
+                <li><a href="../../index.html">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <h1>Four in a Row</h1>
+        <p class="game-description">Drop your pieces and connect four to win!</p>
+        
+        <div class="game-area">
+            <div class="left-panel">
+                <div class="game-info">
+                    <h3>Game Rules</h3>
+                    <ul class="rules-list">
+                        <li>Click a column to drop your piece</li>
+                        <li>Pieces fall to the lowest spot</li>
+                        <li>Connect 4 in any direction to win</li>
+                        <li>Horizontal, vertical, or diagonal</li>
+                        <li>Block your opponent's wins!</li>
+                    </ul>
+                </div>
+                
+                <div class="game-status">
+                    <h3>Current Turn</h3>
+                    <div id="currentPlayer" class="status-text">
+                        <span class="turn-indicator red-turn">🔴</span>
+                        <span>Red's Turn</span>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button onclick="game.resetGame()">New Game</button>
+                    <button onclick="game.undoMove()">Undo Move</button>
+                </div>
+            </div>
+            
+            <div class="board-wrapper">
+                <div class="board-container">
+                    <div class="column-indicators" id="columnIndicators">
+                        <div class="column-indicator" data-col="0">▼</div>
+                        <div class="column-indicator" data-col="1">▼</div>
+                        <div class="column-indicator" data-col="2">▼</div>
+                        <div class="column-indicator" data-col="3">▼</div>
+                        <div class="column-indicator" data-col="4">▼</div>
+                        <div class="column-indicator" data-col="5">▼</div>
+                        <div class="column-indicator" data-col="6">▼</div>
+                    </div>
+                    <div id="gameBoard" class="game-board"></div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="scoreboard">
+                    <h3>Score</h3>
+                    <div class="score-item">
+                        <span class="score-player">🔴 Red</span>
+                        <span id="redScore" class="score-value">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="score-player">🟡 Yellow</span>
+                        <span id="yellowScore" class="score-value">0</span>
+                    </div>
+                    <div class="score-item draws">
+                        <span class="score-player">🤝 Draws</span>
+                        <span id="drawScore" class="score-value">0</span>
+                    </div>
+                    <button class="clear-scores-btn" onclick="game.clearScores()">Clear Scores</button>
+                </div>
+                
+                <div class="legend">
+                    <h3>Legend</h3>
+                    <div class="legend-item">
+                        <div class="legend-piece red-piece"></div>
+                        <span>Red (Player 1)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-piece yellow-piece"></div>
+                        <span>Yellow (Player 2)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-piece winning-piece"></div>
+                        <span>Winning Pieces</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Win Modal -->
+    <div id="winModal" class="modal">
+        <div class="modal-content">
+            <h2 id="winMessage" class="win-message"></h2>
+            <p id="winSubtext" class="win-subtext"></p>
+            <div class="modal-buttons">
+                <button onclick="game.startNewGame()" class="btn-primary">Play Again</button>
+                <button onclick="game.closeModal()" class="btn-secondary">Review Board</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

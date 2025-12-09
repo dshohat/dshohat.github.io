@@ -383,12 +383,16 @@
         async function loadGames() {
             try {
                 const response = await fetch('games-data.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const data = await response.json();
+                console.log('Games loaded:', data.games.length);
                 displayGames(data.games);
             } catch (error) {
                 console.error('Error loading games:', error);
                 document.getElementById('gamesGrid').innerHTML = 
-                    '<div class="loading">Failed to load games. Please try again later.</div>';
+                    '<div class="loading">Failed to load games. Please try again later.<br><small>' + error.message + '</small></div>';
             }
         }
 
@@ -400,7 +404,7 @@
                 return;
             }
 
-            gamesGrid.innerHTML = games.map(game => `
+            gamesGrid.innerHTML = games.map((game, index) => `
                 <div class="game-card">
                     <div class="game-header">
                         <div class="game-icon">${game.icon}</div>

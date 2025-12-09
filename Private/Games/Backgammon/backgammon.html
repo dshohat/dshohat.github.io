@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backgammon</title>
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <a href="../../index.html" style="text-decoration: none; color: inherit;">
+                    <h1>Drory Shohat</h1>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../games.html">← My Games</a></li>
+                <li><a href="../../index.html">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <h1>Backgammon</h1>
+        <p class="game-description">Classic strategy game - First to win 3 games wins the match!</p>
+        
+        <div class="game-area">
+            <div class="left-panel">
+                <div class="match-info">
+                    <h3>Match Score (Best of 5)</h3>
+                    <div class="match-score">
+                        <div class="player-score white-score">
+                            <span class="player-label">⚪ White</span>
+                            <span id="whiteMatchScore" class="match-points">0</span>
+                        </div>
+                        <div class="vs-divider">vs</div>
+                        <div class="player-score black-score">
+                            <span class="player-label">⚫ Black</span>
+                            <span id="blackMatchScore" class="match-points">0</span>
+                        </div>
+                    </div>
+                    <div id="matchStatus" class="match-status">First to 3 wins!</div>
+                </div>
+                
+                <div class="game-status">
+                    <h3>Current Turn</h3>
+                    <div id="currentPlayer" class="status-text">
+                        <span class="turn-indicator">⚪</span>
+                        <span>White's Turn</span>
+                    </div>
+                    <div id="gameMessage" class="game-message"></div>
+                </div>
+                
+                <div class="dice-section">
+                    <h3>Dice</h3>
+                    <div class="dice-container">
+                        <div id="die1" class="die">-</div>
+                        <div id="die2" class="die">-</div>
+                    </div>
+                    <div id="movesRemaining" class="moves-remaining"></div>
+                    <button id="rollButton" onclick="game.rollDice()">Roll Dice</button>
+                </div>
+                
+                <div class="controls">
+                    <button onclick="game.undoMove()">Undo Move</button>
+                    <button onclick="game.resetGame()">New Game</button>
+                    <button onclick="game.resetMatch()">New Match</button>
+                </div>
+            </div>
+            
+            <div class="board-wrapper">
+                <div class="board-container">
+                    <!-- Black's bearing off area (top right) -->
+                    <div class="bearing-off-area black-bearing-off" id="blackBearingOff">
+                        <div class="bearing-off-label">Black Home</div>
+                        <div class="bearing-off-pieces" id="blackBornOff"></div>
+                    </div>
+                    
+                    <div class="board-main">
+                        <!-- Top half of board (points 13-24) -->
+                        <div class="board-half top-half">
+                            <div class="quadrant top-left">
+                                <div class="point" data-point="13"></div>
+                                <div class="point" data-point="14"></div>
+                                <div class="point" data-point="15"></div>
+                                <div class="point" data-point="16"></div>
+                                <div class="point" data-point="17"></div>
+                                <div class="point" data-point="18"></div>
+                            </div>
+                            <div class="bar-section top-bar" id="topBar">
+                                <div class="bar-pieces" id="whiteBar"></div>
+                            </div>
+                            <div class="quadrant top-right">
+                                <div class="point" data-point="19"></div>
+                                <div class="point" data-point="20"></div>
+                                <div class="point" data-point="21"></div>
+                                <div class="point" data-point="22"></div>
+                                <div class="point" data-point="23"></div>
+                                <div class="point" data-point="24"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Point numbers (top) -->
+                        <div class="point-numbers top-numbers">
+                            <span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span>
+                            <span class="bar-spacer"></span>
+                            <span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span>
+                        </div>
+                        
+                        <!-- Point numbers (bottom) -->
+                        <div class="point-numbers bottom-numbers">
+                            <span>12</span><span>11</span><span>10</span><span>9</span><span>8</span><span>7</span>
+                            <span class="bar-spacer"></span>
+                            <span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
+                        </div>
+                        
+                        <!-- Bottom half of board (points 1-12) -->
+                        <div class="board-half bottom-half">
+                            <div class="quadrant bottom-left">
+                                <div class="point" data-point="12"></div>
+                                <div class="point" data-point="11"></div>
+                                <div class="point" data-point="10"></div>
+                                <div class="point" data-point="9"></div>
+                                <div class="point" data-point="8"></div>
+                                <div class="point" data-point="7"></div>
+                            </div>
+                            <div class="bar-section bottom-bar" id="bottomBar">
+                                <div class="bar-pieces" id="blackBar"></div>
+                            </div>
+                            <div class="quadrant bottom-right">
+                                <div class="point" data-point="6"></div>
+                                <div class="point" data-point="5"></div>
+                                <div class="point" data-point="4"></div>
+                                <div class="point" data-point="3"></div>
+                                <div class="point" data-point="2"></div>
+                                <div class="point" data-point="1"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- White's bearing off area (bottom right) -->
+                    <div class="bearing-off-area white-bearing-off" id="whiteBearingOff">
+                        <div class="bearing-off-label">White Home</div>
+                        <div class="bearing-off-pieces" id="whiteBornOff"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="game-rules">
+                    <h3>Quick Rules</h3>
+                    <ul class="rules-list">
+                        <li>Roll dice to move your pieces</li>
+                        <li>White moves toward point 1</li>
+                        <li>Black moves toward point 24</li>
+                        <li>Hit blots (single pieces) to bar</li>
+                        <li>Bear off all pieces to win</li>
+                        <li>Gammon = 2 pts (opponent has 0 off)</li>
+                    </ul>
+                </div>
+                
+                <div class="legend">
+                    <h3>Legend</h3>
+                    <div class="legend-item">
+                        <div class="legend-piece white-piece"></div>
+                        <span>White (moves ← to 1)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-piece black-piece"></div>
+                        <span>Black (moves → to 24)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-square valid-move-square"></div>
+                        <span>Valid Move</span>
+                    </div>
+                </div>
+                
+                <div class="scoring-info">
+                    <h3>Scoring</h3>
+                    <div class="score-rule">
+                        <span class="score-type">Regular Win</span>
+                        <span class="score-pts">1 pt</span>
+                    </div>
+                    <div class="score-rule">
+                        <span class="score-type">Gammon</span>
+                        <span class="score-pts">2 pts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Win Modal -->
+    <div id="winModal" class="modal">
+        <div class="modal-content">
+            <h2 id="winMessage" class="win-message"></h2>
+            <p id="winSubtext" class="win-subtext"></p>
+            <div id="matchResult" class="match-result"></div>
+            <div class="modal-buttons">
+                <button id="playAgainBtn" onclick="game.startNewGame()" class="btn-primary">Play Next Game</button>
+                <button onclick="game.closeModal()" class="btn-secondary">Review Board</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
