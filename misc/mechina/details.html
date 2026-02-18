@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תכנון ארוחות - פרטים</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 40px;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+        }
+
+        .step.active {
+            background: #667eea;
+        }
+
+        .step.done {
+            background: #4caf50;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 15px;
+            margin-bottom: 36px;
+        }
+
+        .meal-badge {
+            display: inline-block;
+            background: #f0edff;
+            color: #667eea;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 10px;
+        }
+
+        .form-group label .icon {
+            font-size: 24px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: inherit;
+            direction: rtl;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+        }
+
+        .form-group input::placeholder {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 6px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 36px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #eee;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="step-indicator">
+            <div class="step done"></div>
+            <div class="step active"></div>
+            <div class="step"></div>
+            <div class="step"></div>
+        </div>
+
+        <h1>פרטי הארוחה</h1>
+        <p class="subtitle">ספרו לנו קצת על ההכנה</p>
+        <div class="meal-badge" id="mealBadge"></div>
+
+        <form id="detailsForm" onsubmit="return goNext()">
+            <div class="form-group">
+                <label>
+                    <span class="icon">👥</span>
+                    מספר סועדים
+                </label>
+                <input type="number" id="numEaters" min="1" max="100" placeholder="כמה אנשים אוכלים?" required>
+                <div class="error-msg" id="eatersError">אנא הזינו מספר תקין</div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <span class="icon">👨‍🍳</span>
+                    מספר מכינים
+                </label>
+                <input type="number" id="numCooks" min="1" max="50" placeholder="כמה אנשים מכינים את האוכל?" required>
+                <div class="error-msg" id="cooksError">אנא הזינו מספר תקין</div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <span class="icon">⏱️</span>
+                    זמן הכנה (בדקות)
+                </label>
+                <input type="number" id="prepTime" min="5" max="480" placeholder="כמה דקות יש לכם?" required>
+                <div class="input-hint">מינימום 5 דקות, מקסימום 8 שעות</div>
+                <div class="error-msg" id="timeError">אנא הזינו זמן תקין (5-480 דקות)</div>
+            </div>
+
+            <div class="buttons">
+                <a href="index.html" class="btn btn-secondary">חזרה</a>
+                <button type="submit" class="btn btn-primary">המשך</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Show selected meal
+        const mealType = localStorage.getItem('mealType') || 'ארוחה';
+        document.getElementById('mealBadge').textContent = mealType;
+
+        // Restore saved values if any
+        if (localStorage.getItem('numEaters')) {
+            document.getElementById('numEaters').value = localStorage.getItem('numEaters');
+        }
+        if (localStorage.getItem('numCooks')) {
+            document.getElementById('numCooks').value = localStorage.getItem('numCooks');
+        }
+        if (localStorage.getItem('prepTime')) {
+            document.getElementById('prepTime').value = localStorage.getItem('prepTime');
+        }
+
+        function goNext() {
+            const eaters = document.getElementById('numEaters').value;
+            const cooks = document.getElementById('numCooks').value;
+            const time = document.getElementById('prepTime').value;
+
+            let valid = true;
+
+            if (!eaters || eaters < 1) {
+                document.getElementById('eatersError').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('eatersError').style.display = 'none';
+            }
+
+            if (!cooks || cooks < 1) {
+                document.getElementById('cooksError').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('cooksError').style.display = 'none';
+            }
+
+            if (!time || time < 5 || time > 480) {
+                document.getElementById('timeError').style.display = 'block';
+                valid = false;
+            } else {
+                document.getElementById('timeError').style.display = 'none';
+            }
+
+            if (valid) {
+                localStorage.setItem('numEaters', eaters);
+                localStorage.setItem('numCooks', cooks);
+                localStorage.setItem('prepTime', time);
+                window.location.href = 'composition.html';
+            }
+
+            return false;
+        }
+    </script>
+</body>
+</html>

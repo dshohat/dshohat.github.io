@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תכנון ארוחות</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+        .meal-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .meal-btn {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            border: 2px solid #e8e8e8;
+            border-radius: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .meal-btn:hover {
+            border-color: #667eea;
+            background: #f8f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .meal-btn:active {
+            transform: translateY(0);
+        }
+
+        .meal-icon {
+            font-size: 40px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .meal-icon.breakfast {
+            background: #fff3e0;
+        }
+
+        .meal-icon.lunch {
+            background: #e8f5e9;
+        }
+
+        .meal-icon.dinner {
+            background: #e3f2fd;
+        }
+
+        .meal-text {
+            text-align: right;
+        }
+
+        .meal-text h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .meal-text p {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 40px;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+        }
+
+        .step.active {
+            background: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="step-indicator">
+            <div class="step active"></div>
+            <div class="step"></div>
+            <div class="step"></div>
+            <div class="step"></div>
+        </div>
+
+        <div class="logo">🍽️</div>
+        <h1>בחרו את הארוחה</h1>
+        <p class="subtitle">מה תרצו להכין היום?</p>
+
+        <div class="meal-options">
+            <a href="details.html" class="meal-btn" onclick="chooseMeal('ארוחת בוקר')">
+                <div class="meal-icon breakfast">🌅</div>
+                <div class="meal-text">
+                    <h2>ארוחת בוקר</h2>
+                    <p>התחלה טובה ליום חדש</p>
+                </div>
+            </a>
+
+            <a href="details.html" class="meal-btn" onclick="chooseMeal('ארוחת צהריים')">
+                <div class="meal-icon lunch">☀️</div>
+                <div class="meal-text">
+                    <h2>ארוחת צהריים</h2>
+                    <p>ארוחה מזינה באמצע היום</p>
+                </div>
+            </a>
+
+            <a href="details.html" class="meal-btn" onclick="chooseMeal('ארוחת ערב')">
+                <div class="meal-icon dinner">🌙</div>
+                <div class="meal-text">
+                    <h2>ארוחת ערב</h2>
+                    <p>סיום מושלם ליום</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function chooseMeal(meal) {
+            localStorage.setItem('mealType', meal);
+        }
+    </script>
+</body>
+</html>
