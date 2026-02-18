@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תכנון ארוחות - סיכום</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 40px;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+        }
+
+        .step.done {
+            background: #4caf50;
+        }
+
+        .step.active {
+            background: #667eea;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: #f9f9fb;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .summary-card h3 {
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-row .label {
+            color: #666;
+            font-size: 15px;
+        }
+
+        .summary-row .value {
+            font-weight: 700;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .composition-bars {
+            margin-top: 10px;
+        }
+
+        .comp-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .comp-bar-label {
+            width: 100px;
+            text-align: right;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .comp-bar-track {
+            flex: 1;
+            height: 24px;
+            background: #eee;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .comp-bar-fill {
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: fit-content;
+            padding: 0 8px;
+            transition: width 0.5s ease;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        canvas {
+            max-width: 160px;
+            max-height: 160px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #eee;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #43a047, #66bb6a);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+            .buttons {
+                display: none;
+            }
+            .step-indicator {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="step-indicator">
+            <div class="step done"></div>
+            <div class="step done"></div>
+            <div class="step done"></div>
+            <div class="step active"></div>
+        </div>
+
+        <div class="success-icon">✅</div>
+        <h1>סיכום הארוחה</h1>
+        <p class="subtitle">הנה כל הפרטים שבחרתם</p>
+
+        <!-- Meal & Details Card -->
+        <div class="summary-card">
+            <h3>🍽️ פרטי הארוחה</h3>
+            <div class="summary-row">
+                <span class="label">סוג ארוחה</span>
+                <span class="value" id="sumMeal"></span>
+            </div>
+            <div class="summary-row">
+                <span class="label">מספר סועדים</span>
+                <span class="value" id="sumEaters"></span>
+            </div>
+            <div class="summary-row">
+                <span class="label">מספר מכינים</span>
+                <span class="value" id="sumCooks"></span>
+            </div>
+            <div class="summary-row">
+                <span class="label">זמן הכנה</span>
+                <span class="value" id="sumTime"></span>
+            </div>
+        </div>
+
+        <!-- Composition Card -->
+        <div class="summary-card">
+            <h3>📊 הרכב תזונתי</h3>
+
+            <div class="chart-container">
+                <canvas id="pieChart" width="160" height="160"></canvas>
+            </div>
+
+            <div class="composition-bars">
+                <div class="comp-bar-row">
+                    <span class="comp-bar-label">🥩 חלבונים</span>
+                    <div class="comp-bar-track">
+                        <div class="comp-bar-fill" id="barProtein" style="background:#FF6384;"></div>
+                    </div>
+                </div>
+                <div class="comp-bar-row">
+                    <span class="comp-bar-label">🧈 שומנים</span>
+                    <div class="comp-bar-track">
+                        <div class="comp-bar-fill" id="barFats" style="background:#FFCE56; color:#333;"></div>
+                    </div>
+                </div>
+                <div class="comp-bar-row">
+                    <span class="comp-bar-label">🍞 פחמימות</span>
+                    <div class="comp-bar-track">
+                        <div class="comp-bar-fill" id="barCarbs" style="background:#36A2EB;"></div>
+                    </div>
+                </div>
+                <div class="comp-bar-row">
+                    <span class="comp-bar-label">🥗 ירקות/פירות</span>
+                    <div class="comp-bar-track">
+                        <div class="comp-bar-fill" id="barVeggies" style="background:#4BC0C0;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <a href="composition.html" class="btn btn-secondary">חזרה</a>
+            <button class="btn btn-success" onclick="printSummary()">🖨️ הדפסה</button>
+            <button class="btn btn-primary" onclick="startOver()">🔄 התחל מחדש</button>
+        </div>
+    </div>
+
+    <script>
+        // Read all data from localStorage
+        const mealType = localStorage.getItem('mealType') || '—';
+        const numEaters = localStorage.getItem('numEaters') || '—';
+        const numCooks = localStorage.getItem('numCooks') || '—';
+        const prepTime = localStorage.getItem('prepTime') || '—';
+        const protein = parseInt(localStorage.getItem('protein')) || 0;
+        const fats = parseInt(localStorage.getItem('fats')) || 0;
+        const carbs = parseInt(localStorage.getItem('carbs')) || 0;
+        const veggies = parseInt(localStorage.getItem('veggies')) || 0;
+
+        // Fill summary
+        document.getElementById('sumMeal').textContent = mealType;
+        document.getElementById('sumEaters').textContent = numEaters + ' אנשים';
+        document.getElementById('sumCooks').textContent = numCooks + ' אנשים';
+        document.getElementById('sumTime').textContent = prepTime + ' דקות';
+
+        // Composition bars
+        function setBar(id, value) {
+            const bar = document.getElementById(id);
+            bar.style.width = value + '%';
+            bar.textContent = value > 5 ? value + '%' : '';
+        }
+
+        setTimeout(() => {
+            setBar('barProtein', protein);
+            setBar('barFats', fats);
+            setBar('barCarbs', carbs);
+            setBar('barVeggies', veggies);
+        }, 100);
+
+        // Draw pie chart
+        const colors = ['#FF6384', '#FFCE56', '#36A2EB', '#4BC0C0'];
+        const data = [protein, fats, carbs, veggies];
+        const canvas = document.getElementById('pieChart');
+        const ctx = canvas.getContext('2d');
+        const total = data.reduce((a, b) => a + b, 0);
+
+        if (total > 0) {
+            let startAngle = -Math.PI / 2;
+            data.forEach((value, i) => {
+                if (value === 0) return;
+                const sliceAngle = (value / total) * 2 * Math.PI;
+
+                ctx.beginPath();
+                ctx.moveTo(80, 80);
+                ctx.arc(80, 80, 75, startAngle, startAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+
+                if (value >= 8) {
+                    const midAngle = startAngle + sliceAngle / 2;
+                    const textX = 80 + Math.cos(midAngle) * 45;
+                    const textY = 80 + Math.sin(midAngle) * 45;
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 13px Segoe UI';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(value + '%', textX, textY);
+                }
+
+                startAngle += sliceAngle;
+            });
+
+            // Donut hole
+            ctx.beginPath();
+            ctx.arc(80, 80, 30, 0, Math.PI * 2);
+            ctx.fillStyle = '#f9f9fb';
+            ctx.fill();
+        }
+
+        function startOver() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        function printSummary() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

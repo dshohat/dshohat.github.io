@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תכנון ארוחות - הרכב תזונתי</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            width: 40px;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+        }
+
+        .step.active {
+            background: #667eea;
+        }
+
+        .step.done {
+            background: #4caf50;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .content-area {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 550px) {
+            .content-area {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .sliders-section {
+            flex: 1;
+            text-align: right;
+            min-width: 0;
+        }
+
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .slider-label .name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .slider-label .value {
+            font-size: 18px;
+            font-weight: 700;
+            min-width: 45px;
+            text-align: left;
+        }
+
+        .color-protein { color: #FF6384; }
+        .color-fats { color: #FFCE56; }
+        .color-carbs { color: #36A2EB; }
+        .color-veggies { color: #4BC0C0; }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            direction: ltr;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .slider-protein { background: linear-gradient(to right, #ffe0e6, #FF6384); }
+        .slider-protein::-webkit-slider-thumb { background: #FF6384; }
+
+        .slider-fats { background: linear-gradient(to right, #fff5d6, #FFCE56); }
+        .slider-fats::-webkit-slider-thumb { background: #FFCE56; }
+
+        .slider-carbs { background: linear-gradient(to right, #d6ecfa, #36A2EB); }
+        .slider-carbs::-webkit-slider-thumb { background: #36A2EB; }
+
+        .slider-veggies { background: linear-gradient(to right, #d6f5f5, #4BC0C0); }
+        .slider-veggies::-webkit-slider-thumb { background: #4BC0C0; }
+
+        .chart-section {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            max-width: 200px;
+            max-height: 200px;
+        }
+
+        .total-display {
+            margin-top: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 8px 20px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .total-ok {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .total-bad {
+            background: #ffebee;
+            color: #e74c3c;
+        }
+
+        .total-hint {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 6px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #eee;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="step-indicator">
+            <div class="step done"></div>
+            <div class="step done"></div>
+            <div class="step active"></div>
+            <div class="step"></div>
+        </div>
+
+        <h1>הרכב תזונתי</h1>
+        <p class="subtitle">בחרו את היחס בין רכיבי הארוחה (סה"כ 100%)</p>
+
+        <div class="content-area">
+            <div class="sliders-section">
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span class="name">🥩 חלבונים</span>
+                        <span class="value color-protein" id="proteinVal">25%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="25" class="slider-protein" id="protein" oninput="updateChart()">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span class="name">🧈 שומנים</span>
+                        <span class="value color-fats" id="fatsVal">25%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="25" class="slider-fats" id="fats" oninput="updateChart()">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span class="name">🍞 פחמימות</span>
+                        <span class="value color-carbs" id="carbsVal">25%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="25" class="slider-carbs" id="carbs" oninput="updateChart()">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span class="name">🥗 ירקות / פירות</span>
+                        <span class="value color-veggies" id="veggiesVal">25%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="25" class="slider-veggies" id="veggies" oninput="updateChart()">
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <canvas id="pieChart" width="200" height="200"></canvas>
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-dot" style="background:#FF6384"></div>חלבונים</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#FFCE56"></div>שומנים</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#36A2EB"></div>פחמימות</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#4BC0C0"></div>ירקות/פירות</div>
+                </div>
+                <div class="total-display" id="totalDisplay">סה"כ: 100%</div>
+                <div class="total-hint" id="totalHint"></div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <a href="details.html" class="btn btn-secondary">חזרה</a>
+            <button class="btn btn-primary" id="nextBtn" onclick="goNext()">המשך</button>
+        </div>
+    </div>
+
+    <script>
+        const colors = ['#FF6384', '#FFCE56', '#36A2EB', '#4BC0C0'];
+        const canvas = document.getElementById('pieChart');
+        const ctx = canvas.getContext('2d');
+
+        // Restore saved values
+        if (localStorage.getItem('protein')) {
+            document.getElementById('protein').value = localStorage.getItem('protein');
+            document.getElementById('fats').value = localStorage.getItem('fats');
+            document.getElementById('carbs').value = localStorage.getItem('carbs');
+            document.getElementById('veggies').value = localStorage.getItem('veggies');
+        }
+
+        function getValues() {
+            return {
+                protein: parseInt(document.getElementById('protein').value),
+                fats: parseInt(document.getElementById('fats').value),
+                carbs: parseInt(document.getElementById('carbs').value),
+                veggies: parseInt(document.getElementById('veggies').value)
+            };
+        }
+
+        function drawPieChart(values) {
+            const data = [values.protein, values.fats, values.carbs, values.veggies];
+            const total = data.reduce((a, b) => a + b, 0);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (total === 0) {
+                ctx.beginPath();
+                ctx.arc(100, 100, 90, 0, Math.PI * 2);
+                ctx.fillStyle = '#f0f0f0';
+                ctx.fill();
+                ctx.fillStyle = '#ccc';
+                ctx.font = '16px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.fillText('אין נתונים', 100, 105);
+                return;
+            }
+
+            let startAngle = -Math.PI / 2;
+
+            data.forEach((value, i) => {
+                if (value === 0) return;
+                const sliceAngle = (value / total) * 2 * Math.PI;
+
+                ctx.beginPath();
+                ctx.moveTo(100, 100);
+                ctx.arc(100, 100, 90, startAngle, startAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+
+                // Draw percentage text in slice
+                if (value >= 8) {
+                    const midAngle = startAngle + sliceAngle / 2;
+                    const textX = 100 + Math.cos(midAngle) * 55;
+                    const textY = 100 + Math.sin(midAngle) * 55;
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 14px Segoe UI';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(value + '%', textX, textY);
+                }
+
+                startAngle += sliceAngle;
+            });
+
+            // Draw center circle for donut effect
+            ctx.beginPath();
+            ctx.arc(100, 100, 40, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+
+            // Draw total in center
+            ctx.fillStyle = total === 100 ? '#4caf50' : '#e74c3c';
+            ctx.font = 'bold 20px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(total + '%', 100, 100);
+        }
+
+        function updateChart() {
+            const values = getValues();
+            const total = values.protein + values.fats + values.carbs + values.veggies;
+
+            document.getElementById('proteinVal').textContent = values.protein + '%';
+            document.getElementById('fatsVal').textContent = values.fats + '%';
+            document.getElementById('carbsVal').textContent = values.carbs + '%';
+            document.getElementById('veggiesVal').textContent = values.veggies + '%';
+
+            const totalDisplay = document.getElementById('totalDisplay');
+            const totalHint = document.getElementById('totalHint');
+            const nextBtn = document.getElementById('nextBtn');
+
+            totalDisplay.textContent = 'סה"כ: ' + total + '%';
+
+            if (total === 100) {
+                totalDisplay.className = 'total-display total-ok';
+                totalHint.textContent = '✓ מושלם!';
+                totalHint.style.color = '#4caf50';
+                nextBtn.disabled = false;
+            } else {
+                totalDisplay.className = 'total-display total-bad';
+                if (total < 100) {
+                    totalHint.textContent = 'חסרים ' + (100 - total) + '% להשלמה';
+                } else {
+                    totalHint.textContent = 'עודף של ' + (total - 100) + '%';
+                }
+                totalHint.style.color = '#e74c3c';
+                nextBtn.disabled = true;
+            }
+
+            drawPieChart(values);
+        }
+
+        function goNext() {
+            const values = getValues();
+            const total = values.protein + values.fats + values.carbs + values.veggies;
+            if (total !== 100) return;
+
+            localStorage.setItem('protein', values.protein);
+            localStorage.setItem('fats', values.fats);
+            localStorage.setItem('carbs', values.carbs);
+            localStorage.setItem('veggies', values.veggies);
+            window.location.href = 'summary.html';
+        }
+
+        // Initial draw
+        updateChart();
+    </script>
+</body>
+</html>
