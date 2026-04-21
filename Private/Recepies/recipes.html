@@ -194,49 +194,6 @@
             font-weight: 500;
         }
 
-        .recipe-details {
-            display: none;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 2px solid #e2e8f0;
-        }
-
-        .recipe-details.active {
-            display: block;
-        }
-
-        .recipe-content {
-            text-align: right;
-            white-space: pre-wrap;
-            line-height: 1.8;
-            color: #334155;
-            font-size: 0.95rem;
-        }
-
-        .recipe-content h3 {
-            color: #1e293b;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .close-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            margin-top: 1rem;
-            font-family: 'Heebo', sans-serif;
-            transition: background 0.3s ease;
-        }
-
-        .close-btn:hover {
-            background: #dc2626;
-        }
-
         /* Footer */
         .footer {
             background: #1e293b;
@@ -309,10 +266,6 @@
                 font-size: 1.35rem;
             }
             
-            .recipe-content {
-                font-size: 0.9rem;
-                line-height: 1.7;
-            }
         }
 
         @media (max-width: 480px) {
@@ -357,15 +310,6 @@
                 padding: 0.2rem 0.6rem;
             }
             
-            .recipe-content {
-                font-size: 0.85rem;
-                line-height: 1.6;
-            }
-            
-            .close-btn {
-                padding: 0.45rem 1.25rem;
-                font-size: 0.9rem;
-            }
         }
 
         @media (max-width: 360px) {
@@ -393,9 +337,6 @@
                 font-size: 1.1rem;
             }
             
-            .recipe-content {
-                font-size: 0.8rem;
-            }
         }
     </style>
 </head>
@@ -477,9 +418,9 @@
             grid.innerHTML = '';
 
             recipes.forEach((recipe, index) => {
-                const recipeCard = document.createElement('div');
+                const recipeCard = document.createElement('a');
                 recipeCard.className = 'recipe-card';
-                recipeCard.onclick = () => toggleRecipe(recipe.id);
+                recipeCard.href = `recipe.html?id=${encodeURIComponent(recipe.id)}`;
                 recipeCard.id = recipe.id;
 
                 recipeCard.innerHTML = `
@@ -489,39 +430,10 @@
                     <div class="recipe-tags">
                         ${recipe.tags.map(tag => `<span class="recipe-tag">${tag}</span>`).join('')}
                     </div>
-                    <div class="recipe-details" id="${recipe.id}-details">
-                        <div class="recipe-content">${recipe.content}</div>
-                        <button class="close-btn" onclick="event.stopPropagation(); toggleRecipe('${recipe.id}')">סגור</button>
-                    </div>
                 `;
 
                 grid.appendChild(recipeCard);
             });
-        }
-
-        function toggleRecipe(recipeId) {
-            const recipeDetails = document.getElementById(recipeId + '-details');
-            const allRecipes = document.querySelectorAll('.recipe-details');
-            
-            // Close all other recipes
-            allRecipes.forEach(recipe => {
-                if (recipe.id !== recipeId + '-details') {
-                    recipe.classList.remove('active');
-                }
-            });
-            
-            // Toggle the clicked recipe
-            recipeDetails.classList.toggle('active');
-            
-            // Scroll to recipe if opening
-            if (recipeDetails.classList.contains('active')) {
-                setTimeout(() => {
-                    document.getElementById(recipeId).scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'nearest' 
-                    });
-                }, 100);
-            }
         }
 
         // Smooth scrolling for anchor links

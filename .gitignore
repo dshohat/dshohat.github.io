@@ -1,0 +1,2 @@
+# Ignore all child folders under Private/Tools (recordings, output, etc.)
+Private/Tools/*/

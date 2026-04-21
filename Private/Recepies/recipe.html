@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מתכון</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            line-height: 1.7;
+            color: #334155;
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .nav-brand h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #334155;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 1.5rem;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .main {
+            flex: 1;
+            padding: 2rem 1rem 3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .recipe-head {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 1.2rem 1.4rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .recipe-icon {
+            font-size: 2rem;
+        }
+
+        .recipe-meta h2 {
+            color: #1e293b;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .recipe-meta p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .recipe-content {
+            white-space: pre-wrap;
+            font-size: 1rem;
+            color: #334155;
+            padding: 1.5rem 1.4rem;
+        }
+
+        .status {
+            text-align: center;
+            color: #64748b;
+            padding: 2.5rem 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .footer {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                padding: 0.9rem 1rem;
+            }
+
+            .hero {
+                padding: 2.2rem 1rem;
+            }
+
+            .hero-title {
+                font-size: 1.7rem;
+            }
+
+            .recipe-meta h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <ul class="nav-links">
+                <li><a href="recipes.html">← חזרה לכל המתכונים</a></li>
+            </ul>
+            <div class="nav-brand">
+                <a href="../index.html" style="text-decoration: none; color: inherit;">
+                    <h1>דרורי שוחט</h1>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1 class="hero-title" id="hero-title">מתכון</h1>
+        <p class="hero-subtitle">גרסה נוחה לקריאה והדפסה</p>
+    </section>
+
+    <main class="main">
+        <div class="container" id="recipe-root">
+            <div class="status">טוען מתכון...</div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 דרורי שוחט. כל הזכויות שמורות.</p>
+    </footer>
+
+    <script>
+        function getRecipeId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        async function loadRecipe() {
+            const root = document.getElementById('recipe-root');
+            const recipeId = getRecipeId();
+
+            if (!recipeId) {
+                root.innerHTML = '<div class="status">לא נבחר מתכון.</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch('recipes-data.json');
+                const data = await response.json();
+                const recipe = data.recipes.find(r => r.id === recipeId);
+
+                if (!recipe) {
+                    root.innerHTML = '<div class="status">המתכון לא נמצא.</div>';
+                    return;
+                }
+
+                document.title = recipe.title + ' | מתכונים';
+                document.getElementById('hero-title').textContent = recipe.title;
+
+                root.innerHTML = `
+                    <article class="recipe-card">
+                        <div class="recipe-head">
+                            <span class="recipe-icon">${recipe.icon}</span>
+                            <div class="recipe-meta">
+                                <h2>${recipe.title}</h2>
+                                <p>${recipe.description || ''}</p>
+                            </div>
+                        </div>
+                        <div class="recipe-content">${recipe.content}</div>
+                    </article>
+                `;
+            } catch (error) {
+                console.error(error);
+                root.innerHTML = '<div class="status">שגיאה בטעינת המתכון.</div>';
+            }
+        }
+
+        loadRecipe();
+    </script>
+</body>
+</html>
