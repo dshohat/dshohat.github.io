@@ -1,6 +1,16 @@
 {
   "pages": [
     {
+      "id": "game-independence-trivia",
+      "title": "טריוויית יום העצמאות",
+      "titleEnglish": "Independence Day Trivia",
+      "url": "/Private/Games/IndependenceTrivia/independence-trivia.html",
+      "content": "טריוויית יום העצמאות משחק טריוויה בעברית על מדינת ישראל היסטוריה גיאוגרפיה תרבות אומנות מדע טכנולוגיה ספורט פוליטיקה דת חגים אוכל מטבח 252 שאלות 8 קטגוריות 4 רמות קושי קל בינוני קשה מעורב 1 4 שחקנים מפת ישראל אינטראקטיבית ערים נדלקות תל אביב ירושלים חיפה אילת באר שבע צפת עכו טבריה נצרת מטולה לוח שיאים קונפטי דגל ישראל יום העצמאות",
+      "type": "game",
+      "section": "games",
+      "tags": ["trivia", "hebrew", "multiplayer", "ישראל", "יום העצמאות", "טריוויה", "עברית"]
+    },
+    {
       "id": "recipe-perfect-rice",
       "title": "אורז מושלם",
       "titleEnglish": "Perfect Rice",

@@ -66,6 +66,25 @@
                 "Undo functionality",
                 "Game state persistence"
             ]
+        },
+        {
+            "id": "independence-trivia",
+            "title": "טריוויית יום העצמאות 🇮🇱",
+            "icon": "🇮🇱",
+            "description": "משחק טריוויה בעברית על מדינת ישראל — היסטוריה, גיאוגרפיה, תרבות ועוד. עד 4 שחקנים, מפת ישראל אינטראקטיבית וקונפטי בצבעי הדגל!",
+            "path": "IndependenceTrivia/independence-trivia.html",
+            "tags": ["trivia", "hebrew", "multiplayer", "educational", "ישראל"],
+            "difficulty": "easy",
+            "features": [
+                "252 שאלות ב-8 קטגוריות",
+                "1–4 שחקנים על אותו מכשיר",
+                "4 רמות קושי (קל / בינוני / קשה / מעורב)",
+                "מפת ישראל אינטראקטיבית — ערים נדלקות עם תשובה נכונה",
+                "טיימר לכל שאלה + ניקוד דינמי",
+                "לוח שיאים שמור (localStorage)",
+                "אפקטי קונפטי בצבעי הדגל",
+                "תמיכה במקלדת (1–4 + Enter)"
+            ]
         }
     ]
 }
