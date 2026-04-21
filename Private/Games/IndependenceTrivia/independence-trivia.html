@@ -162,23 +162,7 @@
                 </aside>
             </div>
 
-            <!-- Bonus map overlay -->
-            <div id="bonusOverlay" class="bonus-overlay" hidden>
-                <div class="bonus-card">
-                    <p class="bonus-intro">📍 בונוס! סמנו איפה</p>
-                    <h3 id="bonusCityLabel" class="bonus-city-label"></h3>
-                    <p class="bonus-subtitle">על המפה</p>
-                    <div class="bonus-timer-row">
-                        <div class="bonus-timer-track">
-                            <div class="bonus-timer-fill" id="bonusTimerBar"></div>
-                        </div>
-                        <span id="bonusTimerText" class="bonus-timer-num">10</span>
-                    </div>
-                    <div id="bonusMapContainer" class="bonus-map-container"></div>
-                    <div id="bonusResult" class="bonus-result" hidden></div>
-                    <button id="bonusNextBtn" class="primary-btn small" hidden>המשך ←</button>
-                </div>
-            </div>
+            <!-- Bonus map overlay: lives OUTSIDE all screens to avoid iOS fixed-position bugs -->
 
             <button id="quitBtn" class="text-btn">סיום משחק</button>
         </section>
@@ -215,6 +199,24 @@
             </div>
         </section>
     </main>
+
+    <!-- Bonus map overlay: outside all screens so position:fixed never sits inside display:none -->
+    <div id="bonusOverlay" class="bonus-overlay" hidden>
+        <div class="bonus-card">
+            <p class="bonus-intro">📍 בונוס! סמנו איפה</p>
+            <h3 id="bonusCityLabel" class="bonus-city-label"></h3>
+            <p class="bonus-subtitle">על המפה</p>
+            <div class="bonus-timer-row">
+                <div class="bonus-timer-track">
+                    <div class="bonus-timer-fill" id="bonusTimerBar"></div>
+                </div>
+                <span id="bonusTimerText" class="bonus-timer-num">10</span>
+            </div>
+            <div id="bonusMapContainer" class="bonus-map-container"></div>
+            <div id="bonusResult" class="bonus-result" hidden></div>
+            <button id="bonusNextBtn" class="primary-btn small" hidden>המשך ←</button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

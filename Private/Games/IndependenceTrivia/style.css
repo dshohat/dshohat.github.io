@@ -619,6 +619,11 @@ body {
 .score-row .player-score { color: var(--israel-blue); font-weight: 700; }
 .score-row .player-streak { color: var(--israel-gold); font-size: 0.85rem; margin-right: 0.5rem; }
 
+/* Remove 300ms tap delay on all interactive elements */
+button, a, input, label, .radio-option, .answer-btn {
+    touch-action: manipulation;
+}
+
 /* City Badges */
 .cities-list {
     display: flex;
@@ -639,7 +644,7 @@ body {
     z-index: 500;
     padding: 1rem;
 }
-.bonus-overlay[hidden] { display: none; }
+.bonus-overlay[hidden] { display: none; pointer-events: none; }
 
 .bonus-card {
     background: var(--bg-card);
