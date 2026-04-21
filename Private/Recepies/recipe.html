@@ -222,6 +222,14 @@
                 document.title = recipe.title + ' | מתכונים';
                 document.getElementById('hero-title').textContent = recipe.title;
 
+                let content = recipe.content || '';
+                if (recipe.contentFile) {
+                    const fileResponse = await fetch(recipe.contentFile);
+                    if (fileResponse.ok) {
+                        content = await fileResponse.text();
+                    }
+                }
+
                 root.innerHTML = `
                     <article class="recipe-card">
                         <div class="recipe-head">
@@ -231,9 +239,10 @@
                                 <p>${recipe.description || ''}</p>
                             </div>
                         </div>
-                        <div class="recipe-content">${recipe.content}</div>
+                        <div class="recipe-content"></div>
                     </article>
                 `;
+                root.querySelector('.recipe-content').textContent = content;
             } catch (error) {
                 console.error(error);
                 root.innerHTML = '<div class="status">שגיאה בטעינת המתכון.</div>';
