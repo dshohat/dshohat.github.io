@@ -208,10 +208,14 @@ class IndependenceTriviaGame {
         // Inject silent map SVG (once)
         this.elements.bonusMapContainer.innerHTML = buildSilentMapSVG();
         const svg = document.getElementById('israelMapSVG');
-        svg.addEventListener('click', (e) => { if (!this.bonusAnswered) this.handleBonusClick(e); });
-        svg.addEventListener('touchend', (e) => {
-            if (!this.bonusAnswered) { e.preventDefault(); this.handleBonusClick(e.changedTouches[0]); }
-        }, { passive: false });
+        const onMapInteract = (e) => {
+            if (this.bonusAnswered || this.bonusTimeout) return;
+            e.preventDefault();
+            const touch = e.touches ? e.touches[0] : e;
+            this.handleBonusClick(touch);
+        };
+        svg.addEventListener('click', onMapInteract);
+        svg.addEventListener('touchstart', onMapInteract, { passive: false });
         this.renderPlayerNames();
         this.renderLeaderboardPreview();
         this.bindEvents();
@@ -520,12 +524,12 @@ class IndependenceTriviaGame {
         this.bonusAnswered = true;
         clearInterval(this.bonusTimer);
 
-        // Convert screen coords → SVG coords
+        // Convert screen coords → SVG coords using getBoundingClientRect
+        // (getScreenCTM returns null on Android when SVG was hidden at render time)
         const svg = document.getElementById('israelMapSVG');
-        const pt = svg.createSVGPoint();
-        pt.x = event.clientX;
-        pt.y = event.clientY;
-        const { x: svgX, y: svgY } = pt.matrixTransform(svg.getScreenCTM().inverse());
+        const rect = svg.getBoundingClientRect();
+        const svgX = ((event.clientX - rect.left) / rect.width)  * MAP_CFG.svgW;
+        const svgY = ((event.clientY - rect.top)  / rect.height) * MAP_CFG.svgH;
 
         // SVG coords → lat/lon
         const clickLon = MAP_CFG.lonMin + (svgX / MAP_CFG.svgW) * (MAP_CFG.lonMax - MAP_CFG.lonMin);
