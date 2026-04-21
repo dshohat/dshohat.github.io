@@ -35,23 +35,45 @@
 
             <div class="setup-card">
                 <div class="setup-section">
-                    <h3>רמת קושי</h3>
+                    <h3>קושי שאלות</h3>
                     <div class="radio-group" id="difficultyGroup">
                         <label class="radio-option">
-                            <input type="radio" name="difficulty" value="קל" checked>
-                            <span class="radio-label easy">קל <small>15 שניות</small></span>
+                            <input type="radio" name="questionDifficulty" value="קל" checked>
+                            <span class="radio-label easy">קל</span>
                         </label>
                         <label class="radio-option">
-                            <input type="radio" name="difficulty" value="בינוני">
-                            <span class="radio-label medium">בינוני <small>12 שניות</small></span>
+                            <input type="radio" name="questionDifficulty" value="בינוני">
+                            <span class="radio-label medium">בינוני</span>
                         </label>
                         <label class="radio-option">
-                            <input type="radio" name="difficulty" value="קשה">
-                            <span class="radio-label hard">קשה <small>8 שניות</small></span>
+                            <input type="radio" name="questionDifficulty" value="קשה">
+                            <span class="radio-label hard">קשה</span>
                         </label>
                         <label class="radio-option">
-                            <input type="radio" name="difficulty" value="מעורב">
-                            <span class="radio-label mixed">מעורב <small>12 שניות</small></span>
+                            <input type="radio" name="questionDifficulty" value="מעורב">
+                            <span class="radio-label mixed">מעורב</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setup-section">
+                    <h3>זמן לתשובה</h3>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="timerSetting" value="ארוך">
+                            <span class="radio-label">ארוך <small>20 שניות</small></span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="timerSetting" value="רגיל" checked>
+                            <span class="radio-label">רגיל <small>12 שניות</small></span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="timerSetting" value="קצר">
+                            <span class="radio-label">קצר <small>8 שניות</small></span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="timerSetting" value="ללא">
+                            <span class="radio-label">ללא טיימר</span>
                         </label>
                     </div>
                 </div>
@@ -75,7 +97,7 @@
                 </div>
 
                 <div class="setup-section">
-                    <h3>שחקנים <small>(1–4 על אותו מכשיר)</small></h3>
+                    <h3>שחקנים <small>(1–10 על אותו מכשיר)</small></h3>
                     <div class="player-count">
                         <button type="button" class="count-btn" id="playerMinus">−</button>
                         <span id="playerCountDisplay" class="player-count-num">1</span>
@@ -131,19 +153,31 @@
                     </button>
                 </div>
 
-                <!-- Side panel: scores + map -->
+                <!-- Side panel: scores only -->
                 <aside class="game-side">
                     <div class="scores-panel" id="scoresPanel">
                         <h3>ניקוד</h3>
                         <ul id="scoresList"></ul>
                     </div>
-
-                    <div class="map-panel">
-                        <h3>מפת ישראל</h3>
-                        <p class="map-hint">ערים נדלקות עם תשובה נכונה</p>
-                        <div id="mapContainer"></div>
-                    </div>
                 </aside>
+            </div>
+
+            <!-- Bonus map overlay -->
+            <div id="bonusOverlay" class="bonus-overlay" hidden>
+                <div class="bonus-card">
+                    <p class="bonus-intro">📍 בונוס! סמנו איפה</p>
+                    <h3 id="bonusCityLabel" class="bonus-city-label"></h3>
+                    <p class="bonus-subtitle">על המפה</p>
+                    <div class="bonus-timer-row">
+                        <div class="bonus-timer-track">
+                            <div class="bonus-timer-fill" id="bonusTimerBar"></div>
+                        </div>
+                        <span id="bonusTimerText" class="bonus-timer-num">10</span>
+                    </div>
+                    <div id="bonusMapContainer" class="bonus-map-container"></div>
+                    <div id="bonusResult" class="bonus-result" hidden></div>
+                    <button id="bonusNextBtn" class="primary-btn small" hidden>המשך ←</button>
+                </div>
             </div>
 
             <button id="quitBtn" class="text-btn">סיום משחק</button>
@@ -165,7 +199,7 @@
                     </div>
                     <div class="stat-item">
                         <span class="stat-num" id="endStatCities">0</span>
-                        <span class="stat-label">ערים שהוארו</span>
+                        <span class="stat-label">פגיעות במפה 🗺️</span>
                     </div>
                 </div>
 

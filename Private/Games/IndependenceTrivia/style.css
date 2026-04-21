@@ -579,14 +579,14 @@ body {
     gap: 1rem;
 }
 
-.scores-panel, .map-panel {
+.scores-panel, .cities-panel {
     background: var(--bg-card);
     border-radius: 12px;
     padding: 1rem;
     box-shadow: var(--shadow-sm);
 }
 
-.scores-panel h3, .map-panel h3 {
+.scores-panel h3, .cities-panel h3 {
     color: var(--israel-blue);
     font-size: 1rem;
     margin-bottom: 0.5rem;
@@ -598,7 +598,7 @@ body {
     margin-bottom: 0.5rem;
 }
 
-#scoresList { list-style: none; }
+#scoresList { list-style: none; max-height: 280px; overflow-y: auto; }
 
 .score-row {
     display: flex;
@@ -619,55 +619,148 @@ body {
 .score-row .player-score { color: var(--israel-blue); font-weight: 700; }
 .score-row .player-streak { color: var(--israel-gold); font-size: 0.85rem; margin-right: 0.5rem; }
 
-/* Map */
-#mapContainer { width: 100%; }
-
-#mapContainer svg {
-    width: 100%;
-    max-height: 380px;
-    display: block;
+/* City Badges */
+.cities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-height: 2rem;
 }
 
-.israel-outline {
-    fill: #e0ecff;
+/* ============ Bonus Map Overlay ============ */
+.bonus-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    z-index: 500;
+    padding: 1rem;
+}
+.bonus-overlay[hidden] { display: none; }
+
+.bonus-card {
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 1.25rem 1.25rem 1rem;
+    max-width: 320px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+    margin: auto;
+}
+
+.bonus-intro {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.2rem;
+}
+
+.bonus-city-label {
+    font-size: 1.9rem;
+    font-weight: 900;
+    color: var(--israel-blue);
+    margin: 0 0 0.15rem;
+}
+
+.bonus-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.65rem;
+}
+
+.bonus-timer-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+}
+
+.bonus-timer-track {
+    flex: 1;
+    height: 7px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bonus-timer-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--israel-blue);
+    transition: width 0.1s linear;
+}
+.bonus-timer-fill.low { background: #ef4444; }
+
+.bonus-timer-num {
+    font-weight: 700;
+    font-size: 0.85rem;
+    min-width: 2ch;
+    color: var(--israel-blue);
+}
+
+.bonus-map-container {
+    width: 100%;
+    border-radius: 10px;
+    border: 2px solid #cbd5e1;
+    overflow: hidden;
+    margin-bottom: 0.6rem;
+}
+
+.israel-map-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    cursor: crosshair;
+}
+
+.israel-outline-path {
+    fill: #dbeafe;
     stroke: var(--israel-blue);
     stroke-width: 2;
-    transition: fill 0.3s;
+    stroke-linejoin: round;
 }
 
-.city-dot {
-    fill: #94a3b8;
-    stroke: var(--israel-white);
-    stroke-width: 1.5;
-    transition: all 0.3s;
+.player-pin {
+    fill: #ef4444;
+    stroke: #fff;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 3px rgba(239,68,68,0.7));
 }
 
-.city-dot.lit {
+.correct-pin {
     fill: var(--israel-gold);
     stroke: var(--israel-blue);
     stroke-width: 2;
-    filter: drop-shadow(0 0 6px var(--israel-gold));
-    animation: cityGlow 1.5s ease-in-out 1;
+    filter: drop-shadow(0 0 4px rgba(255,215,0,0.8));
+    animation: pinPop 0.3s ease-out;
 }
 
-@keyframes cityGlow {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.8); }
-    100% { transform: scale(1); }
+@keyframes pinPop {
+    0% { r: 0; opacity: 0; }
+    70% { r: 11; }
+    100% { r: 8; opacity: 1; }
 }
 
-.city-label {
-    font-size: 9px;
-    fill: var(--text-secondary);
-    font-family: 'Heebo', sans-serif;
-    pointer-events: none;
-    direction: rtl;
+.distance-line {
+    stroke: #94a3b8;
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
 }
 
-.city-label.lit {
-    fill: var(--israel-blue);
-    font-weight: 700;
+.bonus-result {
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
 }
+.bonus-result.great   { background: #dcfce7; color: #166534; }
+.bonus-result.ok      { background: #fef9c3; color: #854d0e; }
+.bonus-result.miss    { background: #fee2e2; color: #991b1b; }
+.bonus-result.timeout { background: #f1f5f9; color: #64748b; }
 
 /* ============ End Screen ============ */
 #endScreen { position: relative; }
