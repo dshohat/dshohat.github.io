@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Croatia 2026 · Family Road Trip (20 Jul – 5 Aug)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<style>
+  :root{
+    --hr-red:#d0021b;
+    --hr-blue:#171796;
+    --sea:#0a7ea4;
+    --ink:#122;
+    --paper:#f6f8fa;
+    --card:#ffffff;
+    --muted:#5b6b74;
+    --line:#e2e8ee;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--paper)}
+  header{
+    background:linear-gradient(120deg,var(--hr-blue),var(--sea) 55%,var(--hr-red));
+    color:#fff;padding:14px 20px;box-shadow:0 2px 10px rgba(0,0,0,.15);
+  }
+  header h1{margin:0;font-size:1.35rem;letter-spacing:.3px}
+  header p{margin:4px 0 0;opacity:.92;font-size:.9rem}
+  .layout{display:flex;height:calc(100vh - 66px);min-height:480px}
+  #sidebar{
+    width:390px;max-width:44%;overflow-y:auto;background:var(--paper);
+    border-right:1px solid var(--line);padding:14px;
+  }
+  #map{flex:1;height:100%}
+  .legend-bar{display:flex;flex-wrap:wrap;gap:8px 14px;margin:2px 2px 14px}
+  .legend-bar span{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted)}
+  .dot{width:13px;height:13px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+  .dot.base{background:var(--hr-red)}
+  .dot.stop{background:var(--sea)}
+  .dot.excursion{background:#1f9d55}
+  .dot.optional{background:#e08e0b}
+  .day-card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:12px 14px;margin-bottom:11px;cursor:pointer;transition:.15s;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  .day-card:hover{border-color:var(--sea);box-shadow:0 3px 12px rgba(10,126,164,.15);transform:translateY(-1px)}
+  .day-card .date{font-size:.72rem;font-weight:700;color:var(--sea);text-transform:uppercase;letter-spacing:.6px}
+  .day-card h3{margin:3px 0 6px;font-size:1.02rem}
+  .day-card ul{margin:6px 0 0;padding-left:18px}
+  .day-card li{font-size:.86rem;margin:2px 0;color:#2b3b44}
+  .badge{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:6px;margin-top:6px}
+  .badge.stay{background:#fde8ea;color:var(--hr-red)}
+  .badge.opt{background:#fdf1dd;color:#a86500}
+  .section-title{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:6px 4px 10px}
+  .tips{background:linear-gradient(180deg,#fffdf6,#fff);border:1px solid #f0e6c8;border-radius:12px;padding:14px 16px;margin-top:6px}
+  .tips h3{margin:0 0 8px;font-size:1rem;color:#8a6a00}
+  .tips details{margin-bottom:8px;border-bottom:1px dashed #eadfbf;padding-bottom:8px}
+  .tips summary{cursor:pointer;font-weight:700;font-size:.9rem;color:#3a3320}
+  .tips p,.tips li{font-size:.84rem;color:#3f4a52;line-height:1.5}
+  .leaflet-popup-content{font-size:.86rem;line-height:1.45}
+  .leaflet-popup-content h4{margin:0 0 4px;font-size:.98rem}
+  .leaflet-popup-content .p-date{color:var(--sea);font-weight:700;font-size:.72rem;text-transform:uppercase}
+  .leaflet-popup-content a.gmap{display:inline-block;margin-top:6px;color:var(--sea);font-weight:600;text-decoration:none}
+  .leaflet-popup-content ul{margin:6px 0 0;padding-left:16px}
+  @media(max-width:760px){
+    .layout{flex-direction:column;height:auto}
+    #sidebar{width:100%;max-width:100%;max-height:46vh;order:2;border-right:none;border-top:1px solid var(--line)}
+    #map{order:1;height:54vh}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🇭🇷 Croatia 2026 — Family Road Trip</h1>
+  <p>20 July → 5 August · Dubrovnik → Split → Plitvice → Istria → Zagreb · Tap a marker or a day to explore</p>
+</header>
+
+<div class="layout">
+  <aside id="sidebar">
+    <div class="legend-bar">
+      <span><i class="dot base"></i>Overnight base</span>
+      <span><i class="dot stop"></i>Driving stop</span>
+      <span><i class="dot excursion"></i>Boat / island</span>
+      <span><i class="dot optional"></i>Optional</span>
+    </div>
+    <div class="section-title">Day by Day</div>
+    <div id="itinerary"></div>
+
+    <div class="section-title">Guide's Tips</div>
+    <div class="tips">
+      <h3>Family notes (girls 19 · 17 · 15)</h3>
+      <details open><summary>Beat the heat &amp; the crowds</summary>
+        <p>Late July/August is 30–35 °C. Do old towns &amp; Plitvice early morning; save beaches, boats and shaded cafés for midday. Carry water, hats and reef-safe sun cream.</p></details>
+      <details><summary>Book these in advance</summary>
+        <ul><li>Dubrovnik City Walls — timed tickets (or Dubrovnik Pass)</li>
+        <li>Plitvice Lakes — timed entry sells out in summer</li>
+        <li>Split↔Hvar catamaran (Krilo / Jadrolinija) — passenger-only, ~1 h</li>
+        <li>Diocletian cellars &amp; the Sting concert in Pula</li></ul></details>
+      <details><summary>Teen-favourite add-ons</summary>
+        <ul><li>Dubrovnik: sunset sea-kayak around the walls &amp; Lokrum; Srđ cable car</li>
+        <li>Omiš: zipline over the Cetina canyon &amp; gentle rafting — a highlight</li>
+        <li>Split/Hvar: Blue Cave + Stiniva speedboat day; Bačvice beach evenings</li>
+        <li>Istria: Baredine Cave, Lim Fjord boat, Pula's Hawaii beach</li>
+        <li>Zagreb: Museum of Broken Relationships, Tkalčićeva street, shopping</li></ul></details>
+      <details><summary>Driving &amp; borders</summary>
+        <p>Since the Pelješac Bridge (2022) you no longer cross Bosnia (Neum) — no passport stop. Croatia is now in Schengen &amp; uses the euro, so no border or currency changes on the whole route. Old towns are pedestrian: park outside and book hotels with parking. Expect a one-way drop-off fee (pick up Dubrovnik, return Zagreb).</p></details>
+      <details><summary>My one route tweak</summary>
+        <p>On 27 July I'd choose <b>Zadar</b> over Krka. Swimming was banned at Krka's main falls in 2021, and you already get waterfalls at Plitvice + Rastoke. Zadar's Sea Organ &amp; sunset are a relaxed, teen-friendly finish before Plitvice.</p></details>
+    </div>
+  </aside>
+  <div id="map"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+/* ---------- Trip data ---------- */
+const CAT_COLOR = { base:"#d0021b", stop:"#0a7ea4", excursion:"#1f9d55", optional:"#e08e0b" };
+
+// Day-by-day cards (primary map point for each day)
+const itinerary = [
+  { date:"20 Jul", title:"Arrival in Dubrovnik", lat:42.6407, lng:18.1077,
+    items:["Land &amp; check-in","Old Town by evening"], stay:"Dubrovnik · 2 nights" },
+  { date:"21 Jul", title:"Dubrovnik", lat:42.6407, lng:18.1077,
+    items:["Walk the City Walls","Boat to Lokrum island","Evening in the Old Town"], stay:"Dubrovnik" },
+  { date:"22 Jul", title:"Dubrovnik → Omiš (pick up car)", lat:43.4447, lng:16.6889,
+    items:["Pelješac Bridge viewpoint","Biokovo Skywalk (glass viewpoint)","Baška Voda stop","Brela – Punta Rata Beach","Arrive Omiš"], stay:"Omiš · 2 nights", opt:"Pelješac Bridge" },
+  { date:"23 Jul", title:"Omiš — easy day", lat:43.4447, lng:16.6889,
+    items:["Old town, promenade &amp; fortress","Cetina river &amp; beach","Optional: rafting or zipline"], stay:"Omiš", opt:"Rafting / zipline" },
+  { date:"24 Jul", title:"Omiš → Trogir → Split", lat:43.5081, lng:16.4402,
+    items:["2–3 h in Trogir old town","Continue to Split"], stay:"Split · 3 nights" },
+  { date:"25 Jul", title:"Split", lat:43.5081, lng:16.4402,
+    items:["Diocletian's Palace","Riva promenade","Old town lanes"], stay:"Split" },
+  { date:"26 Jul", title:"Island day — Hvar &amp; Pakleni", lat:43.1729, lng:16.4413,
+    items:["Catamaran to Hvar","Pakleni Islands swim","Back to Split"], stay:"Split" },
+  { date:"27 Jul", title:"Split → North (Zadar)", lat:44.1192, lng:15.2200,
+    items:["Zadar: Sea Organ &amp; Greeting to the Sun","Drive to Plitvice area"], stay:"Near Plitvice", opt:"Alt: Skradin + Krka NP" },
+  { date:"28 Jul", title:"Plitvice → Rastoke → Rovinj", lat:44.8805, lng:15.6160,
+    items:["Early entry to Plitvice Lakes","Stop at Rastoke watermills","Drive to Rovinj"], stay:"Rovinj · 4 nights" },
+  { date:"29 Jul", title:"Istria — Rovinj", lat:45.0811, lng:13.6387,
+    items:["Explore Rovinj old town &amp; harbour","Sunset by the sea"], stay:"Rovinj" },
+  { date:"30 Jul", title:"Istria — Motovun", lat:45.3369, lng:13.8272,
+    items:["Hilltop town of Motovun","Wine &amp; truffle tasting"], stay:"Rovinj", opt:"Winery / beach" },
+  { date:"31 Jul", title:"Istria — Poreč", lat:45.2269, lng:13.5944,
+    items:["Euphrasian Basilica","Beach / boat / winery time"], stay:"Rovinj", opt:"Winery / boat" },
+  { date:"1 Aug", title:"Pula — Sting concert", lat:44.8737, lng:13.8503,
+    items:["Roman Amphitheatre (Arena)","🎤 Sting live in the Arena"], stay:"Pula · 1 night" },
+  { date:"2 Aug", title:"Pula → Zagreb", lat:45.8131, lng:15.9772,
+    items:["Stop in Opatija or Samobor","Arrive in Zagreb"], stay:"Zagreb · 2 nights", opt:"Opatija / Samobor" },
+  { date:"3 Aug", title:"Zagreb", lat:45.8131, lng:15.9772,
+    items:["Upper Town","Dolac Market","Ban Jelačić Square"], stay:"Zagreb" },
+  { date:"4 Aug", title:"Zagreb", lat:45.8131, lng:15.9772,
+    items:["Cafés, museums &amp; restaurants","Last-day shopping"], stay:"Zagreb" },
+  { date:"5 Aug", title:"Departure", lat:45.7429, lng:16.0688,
+    items:["Early-morning flight home ✈️"], stay:"—" }
+];
+
+// Map markers (richer than daily cards; includes side-trips & optional stops)
+const points = [
+  { name:"Dubrovnik", cat:"base", lat:42.6407, lng:18.1077, date:"20–22 Jul",
+    desc:"Walled Old Town, City Walls walk, Stradun, cable car up Srđ." },
+  { name:"Lokrum Island", cat:"excursion", lat:42.6236, lng:18.1213, date:"21 Jul", from:[42.6407,18.1077],
+    desc:"Short boat hop — botanical gardens, peacocks, swimming coves." },
+  { name:"Pelješac Bridge", cat:"optional", lat:42.9276, lng:17.4310, date:"22 Jul",
+    desc:"Photo stop at Croatia's landmark bridge that bypasses Bosnia." },
+  { name:"Brela — Punta Rata", cat:"stop", lat:43.3745, lng:16.9280, date:"22 Jul",
+    desc:"Croatia's most famous pebble beach, pines &amp; turquoise water." },
+  { name:"Baška Voda", cat:"stop", lat:43.3575, lng:16.9497, date:"22 Jul",
+    desc:"Relaxed seaside promenade &amp; a coffee stop." },
+  { name:"Makarska", cat:"optional", lat:43.2969, lng:17.0178, date:"22 Jul",
+    desc:"Lively Riviera town below Biokovo mountain (drive-through or short stop)." },
+  { name:"Biokovo Skywalk", cat:"stop", lat:43.3186, lng:17.0697, date:"22 Jul", from:[43.2969,17.0178],
+    desc:"Glass-floored horseshoe platform 1228 m up Mt Biokovo — jaw-dropping views over the Riviera &amp; islands. ~1.5 h return detour from Makarska; book a timed slot &amp; bring a layer." },
+  { name:"Omiš", cat:"base", lat:43.4447, lng:16.6889, date:"22–24 Jul",
+    desc:"Pirate town at the Cetina river mouth — fortress, rafting, zipline." },
+  { name:"Trogir", cat:"stop", lat:43.5157, lng:16.2515, date:"24 Jul",
+    desc:"UNESCO island old town, cathedral &amp; Venetian streets." },
+  { name:"Split", cat:"base", lat:43.5081, lng:16.4402, date:"24–27 Jul",
+    desc:"Diocletian's Palace, the Riva, Marjan hill, buzzing nightlife." },
+  { name:"Hvar Town", cat:"excursion", lat:43.1729, lng:16.4413, date:"26 Jul", from:[43.5081,16.4402],
+    desc:"Chic island town, Spanish fortress, beach bars." },
+  { name:"Pakleni Islands", cat:"excursion", lat:43.1585, lng:16.3800, date:"26 Jul", from:[43.1729,16.4413],
+    desc:"Crystal-clear swimming spots just off Hvar." },
+  { name:"Zadar", cat:"stop", lat:44.1192, lng:15.2200, date:"27 Jul",
+    desc:"Sea Organ &amp; Greeting to the Sun — famous sunset." },
+  { name:"Skradin + Krka NP", cat:"optional", lat:43.8058, lng:15.9714, date:"27 Jul (alt)",
+    desc:"Alternative: Skradinski Buk waterfalls (no swimming since 2021)." },
+  { name:"Plitvice Lakes NP", cat:"stop", lat:44.8805, lng:15.6160, date:"28 Jul",
+    desc:"UNESCO turquoise lakes &amp; waterfalls — go at opening time." },
+  { name:"Rastoke", cat:"stop", lat:45.1233, lng:15.5856, date:"28 Jul",
+    desc:"Fairy-tale watermill village where the Slunjčica meets the Korana." },
+  { name:"Rovinj", cat:"base", lat:45.0811, lng:13.6387, date:"28 Jul–1 Aug",
+    desc:"Istria's most romantic harbour town — base for star trips." },
+  { name:"Motovun", cat:"stop", lat:45.3369, lng:13.8272, date:"30 Jul", from:[45.0811,13.6387],
+    desc:"Hilltop town famous for truffles &amp; wine." },
+  { name:"Poreč", cat:"stop", lat:45.2269, lng:13.5944, date:"31 Jul", from:[45.0811,13.6387],
+    desc:"Euphrasian Basilica (UNESCO) &amp; beaches." },
+  { name:"Pula", cat:"base", lat:44.8737, lng:13.8503, date:"1 Aug",
+    desc:"Roman Arena hosting the Sting concert." },
+  { name:"Opatija", cat:"optional", lat:45.3378, lng:14.3053, date:"2 Aug",
+    desc:"Belle-époque seaside resort &amp; Lungomare promenade." },
+  { name:"Samobor", cat:"optional", lat:45.8003, lng:15.7108, date:"2 Aug",
+    desc:"Cute town near Zagreb — famous for kremšnita cream cake." },
+  { name:"Zagreb", cat:"base", lat:45.8131, lng:15.9772, date:"2–5 Aug",
+    desc:"Capital — Upper Town, Dolac Market, cafés &amp; museums." }
+];
+
+// Solid driving route (through-line, chronological main stops)
+const routeOrder = ["Dubrovnik","Pelješac Bridge","Makarska","Baška Voda","Brela — Punta Rata",
+  "Omiš","Trogir","Split","Zadar","Plitvice Lakes NP","Rastoke","Rovinj","Pula","Opatija","Zagreb"];
+
+/* ---------- Build map ---------- */
+const map = L.map('map', { scrollWheelZoom:true });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:18, attribution:'&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const byName = {};
+points.forEach(p => byName[p.name] = p);
+
+function pinIcon(color){
+  return L.divIcon({
+    className:'',
+    html:`<div style="width:18px;height:18px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+          background:${color};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>`,
+    iconSize:[18,18], iconAnchor:[9,17], popupAnchor:[0,-16]
+  });
+}
+
+const markers = {};
+points.forEach(p => {
+  const gmap = `https://www.google.com/maps?q=${p.lat},${p.lng}`;
+  const m = L.marker([p.lat,p.lng],{icon:pinIcon(CAT_COLOR[p.cat])}).addTo(map);
+  m.bindPopup(
+    `<div class="p-date">${p.date}</div><h4>${p.name}</h4><div>${p.desc}</div>`+
+    `<a class="gmap" href="${gmap}" target="_blank" rel="noopener">Open in Google Maps →</a>`
+  );
+  markers[p.name] = m;
+});
+
+// Solid main route
+const routeCoords = routeOrder.map(n => [byName[n].lat, byName[n].lng]);
+L.polyline(routeCoords,{color:'#d0021b',weight:4,opacity:.85}).addTo(map);
+// Small direction dots along the route
+L.polyline(routeCoords,{color:'#fff',weight:1.5,opacity:.6,dashArray:'1 10'}).addTo(map);
+
+// Dashed excursion / star-trip spurs
+points.filter(p=>p.from).forEach(p=>{
+  L.polyline([p.from,[p.lat,p.lng]],{color:CAT_COLOR[p.cat],weight:2.5,opacity:.8,dashArray:'6 6'}).addTo(map);
+});
+
+// Fit to everything
+map.fitBounds(L.latLngBounds(points.map(p=>[p.lat,p.lng])).pad(0.12));
+
+/* ---------- Build sidebar ---------- */
+const box = document.getElementById('itinerary');
+itinerary.forEach((d,i)=>{
+  const el = document.createElement('div');
+  el.className = 'day-card';
+  el.innerHTML =
+    `<div class="date">${d.date}</div><h3>Day ${i+1} · ${d.title}</h3>`+
+    `<ul>${d.items.map(t=>`<li>${t}</li>`).join('')}</ul>`+
+    `<span class="badge stay">🏨 ${d.stay}</span>`+
+    (d.opt?`<span class="badge opt">◆ ${d.opt}</span>`:'');
+  el.addEventListener('click',()=>{
+    map.flyTo([d.lat,d.lng],11,{duration:.8});
+    // open nearest matching marker if any
+    let best=null,bd=1e9;
+    points.forEach(p=>{const dist=(p.lat-d.lat)**2+(p.lng-d.lng)**2;if(dist<bd){bd=dist;best=p.name;}});
+    if(best && bd<0.01) markers[best].openPopup();
+  });
+  box.appendChild(el);
+});
+</script>
+</body>
+</html>
