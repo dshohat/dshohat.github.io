@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>מפת הוורטקסים – כרתים</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root { --bg:#0f1720; --card:#182430; --txt:#eaf2f8; --accent:#f2b544; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "Segoe UI", Arial, sans-serif; background:var(--bg); color:var(--txt); }
+  header { padding:14px 18px; background:#121c26; border-bottom:1px solid #24323f; }
+  h1 { margin:0; font-size:20px; }
+  header p { margin:4px 0 0; font-size:13px; opacity:.75; }
+  .wrap { display:flex; flex-wrap:wrap; gap:12px; padding:12px; }
+  #map { flex:1 1 620px; height:76vh; min-height:420px; border-radius:10px; }
+  .list { flex:1 1 320px; max-width:430px; display:flex; flex-direction:column; gap:10px; }
+  .card { background:var(--card); border:1px solid #24323f; border-radius:10px; padding:12px; cursor:pointer; }
+  .card:hover { border-color:var(--accent); }
+  .card h2 { margin:0 0 4px; font-size:16px; color:var(--accent); }
+  .card p { margin:0 0 8px; font-size:13.5px; line-height:1.5; }
+  .meta { font-size:12.5px; opacity:.85; margin-bottom:8px; }
+  .links a { font-size:12.5px; color:#7fc4ff; text-decoration:none; margin-left:12px; }
+  .links a:hover { text-decoration:underline; }
+  .note { font-size:12px; color:#ffcf7a; margin-top:6px; }
+  .leaflet-popup-content { direction:rtl; text-align:right; font-family:"Segoe UI",Arial,sans-serif; }
+  .leaflet-popup-content b { color:#b3660a; }
+</style>
+</head>
+<body>
+<header>
+  <h1>מפת נקודות אנרגטיות – כרתים</h1>
+  <p>נקודת הבית: וילה אווי (Villa Evi), אזור אנליפסי. זמני הנסיעה מחושבים מהבית.</p>
+</header>
+
+<div class="wrap">
+  <div id="map"></div>
+  <div class="list" id="list"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const HOME = { lat: 35.3157736, lng: 25.3448719 };
+
+const places = [
+  {
+    name: "הבית – וילה אווי (Villa Evi)",
+    lat: HOME.lat, lng: HOME.lng,
+    desc: "נקודת המוצא, אזור אנליפסי / חרסוניסוס.",
+    car: null, walk: null, home: true,
+    gmaps: "https://maps.app.goo.gl/34dADgrRdzsdky666"
+  },
+  {
+    name: "קמינאקי, רמת לסיטי (Kaminaki, Lasithi)",
+    lat: 35.1955, lng: 25.4880,
+    desc: "כפר בלב רמת לסיטי. הציר מהטברנה האיטלקית → הכנסייה עם ספסל תחנת האוטובוס → מורד הכפר. אפקט טיהור חזק ומצעיר על מערכת העצבים. וורטקס עוצמתי ונגיש.",
+    car: "כ־45 ק\"מ, כשעה נסיעה", walk: null
+  },
+  {
+    name: "הפירמידה ההרוסה ליד גובס (Gouves)",
+    lat: 35.3178, lng: 25.2790,
+    desc: "שרידי פירמידה על צלע הר – התשתית עדיין במקום, קווים וזוויות ישרות. כ־20 דקות טיפוס מדרך עפר, נראית מהכביש. צריך לעבור גדר כדי להתקרב. ככל הנראה הפירמידה הדרומית באירופה.",
+    car: "כ־10 ק\"מ, כ־15 דקות נסיעה", walk: null,
+    note: "מיקום משוער – יש למקם מדויק לפי התמונות שלך."
+  },
+  {
+    name: "מאגר המים החקלאי (אזור רמת לסיטי)",
+    lat: 35.1830, lng: 25.4640,
+    desc: "מאגר מים חקלאי בתוך אזור פעיל אנרגטית – המים עצמם נטענו. אפקט טיהור מאזן, חזק במיוחד בטבילה או בהכנסת רגליים/ידיים. מתאים לצליינות רפואה.",
+    car: "כ־45 ק\"מ, כשעה נסיעה", walk: null,
+    note: "מיקום משוער בלבד – המיקום המדויק לא נמסר בהקלטה."
+  },
+  {
+    name: "עצי גורטין (Gortyn / Gortyna)",
+    lat: 35.0636, lng: 24.9486,
+    desc: "שדות בין שני כפרים ממול לאתר העתיקות – עצי זית בני ~2000 שנה בין הריסות רומיות, כולל עמוד רומי שנבלע בתוך עץ. כל עץ נותן אפקט אנרגטי אחר. בסמוך: מוזיאון חדש וממוזג.",
+    car: "כ־80 ק\"מ, כשעה ורבע–שעה וחצי נסיעה", walk: null
+  }
+];
+
+const map = L.map('map');
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19, attribution: '&copy; OpenStreetMap'
+}).addTo(map);
+
+const homeIcon = L.divIcon({ html:'<div style="background:#2ecc71;width:18px;height:18px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 6px #000"></div>', className:'', iconSize:[18,18] });
+const pinIcon  = L.divIcon({ html:'<div style="background:#f2b544;width:16px;height:16px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 6px #000"></div>', className:'', iconSize:[16,16] });
+
+function gmapsLink(p) {
+  return p.gmaps || `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`;
+}
+function dirLink(p) {
+  return `https://www.google.com/maps/dir/?api=1&origin=${HOME.lat},${HOME.lng}&destination=${p.lat},${p.lng}&travelmode=driving`;
+}
+
+const markers = [];
+const listEl = document.getElementById('list');
+
+places.forEach((p, i) => {
+  const m = L.marker([p.lat, p.lng], { icon: p.home ? homeIcon : pinIcon }).addTo(map);
+  const travel = p.home ? 'נקודת הבית' :
+    `🚗 ${p.car}` + (p.walk ? ` · 🚶 ${p.walk}` : ' · ברגל: לא רלוונטי (יותר מחצי שעה)');
+  m.bindPopup(
+    `<b>${p.name}</b><br>${p.desc}<br><small>${travel}</small><br>` +
+    `<a href="${gmapsLink(p)}" target="_blank" rel="noopener">פתח בגוגל מפות</a>` +
+    (p.home ? '' : ` · <a href="${dirLink(p)}" target="_blank" rel="noopener">מסלול נסיעה מהבית</a>`)
+  );
+  markers.push(m);
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML =
+    `<h2>${p.name}</h2><p>${p.desc}</p><div class="meta">${travel}</div>` +
+    `<div class="links"><a href="${gmapsLink(p)}" target="_blank" rel="noopener">פתח בגוגל מפות ↗</a>` +
+    (p.home ? '' : `<a href="${dirLink(p)}" target="_blank" rel="noopener">מסלול מהבית ↗</a>`) + `</div>` +
+    (p.note ? `<div class="note">⚠ ${p.note}</div>` : '');
+  card.onclick = (e) => {
+    if (e.target.tagName === 'A') return;
+    map.setView([p.lat, p.lng], 13);
+    markers[i].openPopup();
+  };
+  listEl.appendChild(card);
+
+  if (!p.home) {
+    L.polyline([[HOME.lat, HOME.lng], [p.lat, p.lng]], { color:'#f2b544', weight:1, opacity:.35, dashArray:'4 6' }).addTo(map);
+  }
+});
+
+map.fitBounds(L.latLngBounds(places.map(p => [p.lat, p.lng])).pad(0.15));
+</script>
+</body>
+</html>
